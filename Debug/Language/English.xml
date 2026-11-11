@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DittoX_Language_File Version = "1" Author = "Scott Brogden" Notes = "" LanguageCode = "eng">
+	<DittoX_Right_Click_Menu>
+		<Item English_Text = "Groups" ID = "-1"></Item>
+		<Item English_Text = "New Group	Ctrl-F7" ID = "32811"></Item>
+		<Item English_Text = "New Group Selection	F7" ID = "32812"></Item>
+		<Item English_Text = "Move to Group" ID = "32840"></Item>
+		<Item English_Text = "Quick Options" ID = "-1"></Item>
+		<Item English_Text = "Lines Per Clip" ID = "-1"></Item>
+		<Item English_Text = "1" ID = "32807"></Item>
+		<Item English_Text = "2" ID = "32786"></Item>
+		<Item English_Text = "3" ID = "32787"></Item>
+		<Item English_Text = "4" ID = "32788"></Item>
+		<Item English_Text = "5" ID = "32789"></Item>
+		<Item English_Text = "Transparency" ID = "-1"></Item>
+		<Item English_Text = "None" ID = "32800"></Item>
+		<Item English_Text = "5 " ID = "32808"></Item>
+		<Item English_Text = "10 " ID = "32792"></Item>
+		<Item English_Text = "15 " ID = "32794"></Item>
+		<Item English_Text = "20 " ID = "32796"></Item>
+		<Item English_Text = "25 " ID = "32798"></Item>
+		<Item English_Text = "30 " ID = "32799"></Item>
+		<Item English_Text = "35 " ID = "32950"></Item>
+		<Item English_Text = "40 " ID = "32790"></Item>
+		<Item English_Text = "Positioning" ID = "-1"></Item>
+		<Item English_Text = "At Caret" ID = "32802"></Item>
+		<Item English_Text = "At Cursor" ID = "32803"></Item>
+		<Item English_Text = "At Previous Position" ID = "32804"></Item>
+		<Item English_Text = "First Ten Hot Keys" ID = "-1"></Item>
+		<Item English_Text = "Use Ctrl - Num" ID = "32777"></Item>
+		<Item English_Text = "Show Hot Key Text" ID = "32778"></Item>
+		<Item English_Text = "View Caption Bar On" ID = "-1"></Item>
+		<Item English_Text = "Top" ID = "32783"></Item>
+		<Item English_Text = "Right" ID = "32780"></Item>
+		<Item English_Text = "Bottom" ID = "32781"></Item>
+		<Item English_Text = "Left" ID = "32782"></Item>
+		<Item English_Text = "Order" ID = "-1"></Item>
+		<Item English_Text = "Ascending (Latest on the Top)" ID = "32795"></Item>
+		<Item English_Text = "Descending (Latest on the Bottom)" ID = "32797"></Item>
+		<Item English_Text = "Double Clicking on Caption" ID = "-1"></Item>
+		<Item English_Text = "Toggles Always on Top" ID = "32814"></Item>
+		<Item English_Text = "Rolls-up Window" ID = "32815"></Item>
+		<Item English_Text = "Toggles Always Show Description" ID = "32816"></Item>
+		<Item English_Text = "Always on Top" ID = "32784"></Item>
+		<Item English_Text = "Auto Roll-up" ID = "32791"></Item>
+		<Item English_Text = "Always Show Description" ID = "32813"></Item>
+		<Item English_Text = "Prompt For New Group Names" ID = "32817"></Item>
+		<Item English_Text = "Select Font" ID = "32844"></Item>
+		<Item English_Text = "Show Thumbnails" ID = "32845"></Item>
+		<Item English_Text = "Draw RTF Text" ID = "32846"></Item>
+		<Item English_Text = "Paste Clip after selection" ID = "32847"></Item>
+		<Item English_Text = "Find As You Type" ID = "32848"></Item>
+		<Item English_Text = "Ensure Entire Window Is Visible" ID = "32849"></Item>
+		<Item English_Text = "Show Clips That are in Groups in Main List" ID = "32850"></Item>
+		<Item English_Text = "View Groups" ID = "32819"></Item>
+		<Item English_Text = "Paste Plain Text Only	Shift-Enter" ID = "32841"></Item>
+		<Item English_Text = "Paste HTML as Plain Text" ID = "32851"></Item>
+		<Item English_Text = "Delete Entry" ID = "32801"></Item>
+		<Item English_Text = "Properties" ID = "32776"></Item>
+		<Item English_Text = "Quick Properties" ID = "-1"></Item>
+		<Item English_Text = "Never Auto Delete" ID = "32820"></Item>
+		<Item English_Text = "Auto Delete" ID = "32821"></Item>
+		<Item English_Text = "Remove Hot Key" ID = "32822"></Item>
+		<Item English_Text = "Options..." ID = "32805"></Item>
+		<Item English_Text = "Help" ID = "32842"></Item>
+		<Item English_Text = "Disconnect from Clipboard" ID = "32775"></Item>
+		<Item English_Text = "Exit Program" ID = "32806"></Item>
+		
+		//New strings added in 3.6 6-9-06
+		<Item English_Text = "Prompt to Delete Clip" ID = "32852"></Item>	
+		<Item English_Text = "Import Clip(s)" ID = "32855"></Item>
+		<Item English_Text = "Export Clip(s)" ID = "32853"></Item>
+		<Item English_Text = "Remove Quick Paste" ID = "32856"></Item>	
+		<Item English_Text = "Edit Clip" ID = "32860"></Item>
+		<Item English_Text = "New Clip" ID = "32867"></Item>	
+		
+		<Item English_Text = "Elevated privileges to paste into elevated apps" ID = "32881"></Item>
+		<Item English_Text = "Show In Taskbar" ID = "32885"></Item>
+		<Item English_Text = "Sticky Clips" ID = "-1"></Item>	
+		<Item English_Text = "Make Top Sticky Clip" ID = "32878"></Item>	
+		<Item English_Text = "Make Last Sticky Clip" ID = "32879"></Item>	
+		<Item English_Text = "Remove Sticky Setting" ID = "32880"></Item>
+		<Item English_Text = "Import/Export" ID = "-1"></Item>	
+		<Item English_Text = "View as QRCode" ID = "32887"></Item>	
+		<Item English_Text = "Export Clip(s) to Text File" ID = "32889"></Item>	
+		
+		//Added 12/17/16
+		<Item English_Text = "Special Paste" ID = "-1"></Item>			
+		<Item English_Text = "UPPER CASE" ID = "32912"></Item>	
+		<Item English_Text = "lower case" ID = "32913"></Item>	
+		<Item English_Text = "Capitalize Case" ID = "32914"></Item>	
+		<Item English_Text = "Sentence case" ID = "32915"></Item>	
+		<Item English_Text = "Remove Line Feeds" ID = "32916"></Item>	
+		<Item English_Text = "Paste + One Line Feed" ID = "32918"></Item>	
+		<Item English_Text = "Paste + Two Line Feeds" ID = "32919"></Item>	
+		<Item English_Text = "Paste + Current Time" ID = "32927"></Item>	
+		<Item English_Text = "Typoglycemia" ID = "32922"></Item>	
+		<Item English_Text = "Filter On" ID = "-1"></Item>			
+		<Item English_Text = "Toggle Last Group Toggle" ID = "32925"></Item>			
+		<Item English_Text = "Clip Order" ID = "-1"></Item>			
+		<Item English_Text = "Move To Top" ID = "32908"></Item>	
+		<Item English_Text = "Move Up" ID = "32906"></Item>	
+		<Item English_Text = "Move Down" ID = "32907"></Item>			
+		<Item English_Text = "Export Clip(s) to Image File" ID = "32902"></Item>	
+		<Item English_Text = "Export to Google Translate" ID = "32900"></Item>	
+		
+		<Item English_Text = "Search Options" ID = "-1"></Item>	
+		<Item English_Text = "Search Description" ID = "32873"></Item>	
+		<Item English_Text = "Search Full Text" ID = "32874"></Item>	
+		<Item English_Text = "Search Quick Paste" ID = "32875"></Item>	
+		<Item English_Text = "Contains Text Search" ID = "32876"></Item>	
+		<Item English_Text = "Regular Expression Search" ID = "32899"></Item>	
+		<Item English_Text = "Wildcard Search" ID = "32903"></Item>	
+		<Item English_Text = "Show text for first ten copy hot keys" ID = "32923"></Item>	
+		<Item English_Text = "Show indicator a clip has been pasted" ID = "32924"></Item>	
+		<Item English_Text = "Global Hot Keys" ID = "32933"></Item>	
+		<Item English_Text = "Delete Clip Data" ID = "32934"></Item>	
+		<Item English_Text = "Import Clip(s)" ID = "32935"></Item>	
+		<Item English_Text = "New Clip" ID = "32937"></Item>	
+		<Item English_Text = "Save Current Clipboard" ID = "32905"></Item>	
+		<Item English_Text = "Import" ID = ""></Item>	
+		
+		<Item English_Text = "Show Startup Message" ID = "32959"></Item>
+		<Item English_Text = "Filter On Selected Clip" ID = "32910"></Item>		
+		<Item English_Text = "Invert Case" ID = "32958"></Item>
+		<Item English_Text = "Trim White Space" ID = "32946"></Item>
+		<Item English_Text = "Slugify" ID = " 32954"></Item>		
+		<Item English_Text = "Paste, Don't Change Clip Order" ID = " 32945"></Item>		
+		<Item English_Text = "Gmail, Content In Body" ID = "32952"></Item>
+		<Item English_Text = "EMail, Clip Export As Attachment" ID = "32953"></Item>
+		<Item English_Text = "EMail, Content As Attachment" ID = "32956"></Item>
+		<Item English_Text = "EMail, Content In Body" ID = "32951"></Item>		
+		<Item English_Text = "Import File Contents From CF_HDROP" ID = "32941"></Item>		
+		<Item English_Text = "Move To Last" ID = "32943"></Item>
+		
+		<Item English_Text = "Increase" ID = "32947"></Item>
+		<Item English_Text = "Decrease" ID = "32948"></Item>
+		<Item English_Text = "Toggle Enabled" ID = "32949"></Item>
+		
+		<Item English_Text = "Backup Database" ID = "32962"></Item>
+		<Item English_Text = "Restore Dastabase" ID = "32964"></Item>
+		
+		<Item English_Text = "Delete All Non Used Clips" ID = "32968"></Item>				
+		
+		<Item English_Text = "CamelCase" ID = "32971"></Item>
+		<Item English_Text = "Multiple Images Horizontally" ID = "32976"></Item>
+		<Item English_Text = "Multiple Images Vertically" ID = "32978"></Item>
+		<Item English_Text = "Ascii Text Only" ID = "32979"></Item>
+		<Item English_Text = "Replace Top Sticky Clip" ID = "32938"></Item>
+		<Item English_Text = "Set Drag File Name" ID = "32970"></Item>
+		
+		//Added 9/4/25 for description window right click menu
+		<Item English_Text = "Remember window position" ID = "32882"></Item>
+		<Item English_Text = "Size window to content" ID = "32883"></Item>
+		<Item English_Text = "Scale images to fit window" ID = "32884"></Item>
+		<Item English_Text = "Hide description window on mouse clip selection" ID = "32926"></Item>
+		<Item English_Text = "Wrap Text" ID = "32928"></Item>
+		<Item English_Text = "Always on top" ID = "32942"></Item>
+		<Item English_Text = "View as Text" ID = "32972"></Item>
+		<Item English_Text = "View as RTF" ID = "32973"></Item>
+		<Item English_Text = "View as HTML" ID = "32974"></Item>
+		<Item English_Text = "View as Image" ID = "32975"></Item>
+		
+	</DittoX_Right_Click_Menu>
+	<DittoX_Clip_Properties>
+		<Item English_Text = "Hot Key" ID = "2039"></Item>
+		<Item English_Text = "Date" ID = "2040"></Item>
+		<Item English_Text = "Never Auto Delete" ID = "1025"></Item>
+		<Item English_Text = "Move To Group" ID = "2041"></Item>
+		<Item English_Text = "Item Title" ID = "2042"></Item>
+		<Item English_Text = "Copy Formats" ID = "2029"></Item>
+		<Item English_Text = "Delete" ID = "1021"></Item>
+		<Item English_Text = "OK" ID = "1"></Item>
+		<Item English_Text = "Cancel" ID = "2"></Item>
+		<Item English_Text = "Copy Properties" ID = "-1"></Item>
+		
+		//Added 1/10/15
+		<Item English_Text = "Hotkey available globally" ID = "1026"></Item>
+		<Item English_Text = "Last Used" ID = "2043"></Item>
+		<Item English_Text = "Quick Paste Text" ID = "2125"></Item>
+		<Item English_Text = "Selected format MD5" ID = "2167"></Item>
+				
+	</DittoX_Clip_Properties>
+	<DittoX_Options_General>
+		<Item English_Text = "Start DittoX on System Startup" ID = "2004"></Item>
+		<Item English_Text = "Display Icon in System Tray" ID = "2003"></Item>
+		<Item English_Text = "Maximum Number of Saved Copies" ID = "2008"></Item>
+		<Item English_Text = "Paste Entries Expire after" ID = "2009"></Item>
+		<Item English_Text = "Days" ID = "2043"></Item>
+		<Item English_Text = "Compact and Repair" ID = "1028"></Item>
+		<Item English_Text = "Check Now" ID = "1030"></Item>
+		<Item English_Text = "Allow Duplicates" ID = "1037"></Item>
+		<Item English_Text = "Update Clip Order On Paste" ID = "1038"></Item>
+		<Item English_Text = "Save Multi-Pastes" ID = "1039"></Item>
+		<Item English_Text = "Hide DittoX on Hot Key if DittoX is Visible" ID = "1040"></Item>
+		<Item English_Text = "Amount of text to save for description" ID = "2044"></Item>
+		<Item English_Text = "On copy play the sound" ID = "2045"></Item>
+		<Item English_Text = "Play" ID = "2034"></Item>
+		<Item English_Text = "Paste Clip in active window after selection" ID = "1041"></Item>
+		<Item English_Text = "Maximum Clip Size (in Bytes)" ID = "2046"></Item>
+		<Item English_Text = "(Leave blank for no limit)" ID = "2047"></Item>
+		<Item English_Text = "Set Database Path" ID = "1034"></Item>
+		<Item English_Text = "Language" ID = "2069"></Item>
+		<Item English_Text = "Ignore copies that occur X milliseconds from the last copy (1000 ms = 1 sec)" ID = "2072"></Item>
+		<Item English_Text = "About Language" ID = "2073"></Item>
+		<Item English_Text = "Ensure DittoX is always connected to the clipboard" ID = "1042"></Item>
+		<Item English_Text = "General" ID = "-1" PropertyPage = "true"></Item>
+		<Item English_Text = "Multi-Paste clip separator ([LF] = line feed)" ID = "2090"></Item>
+		
+		//New item added 3/1/11
+		<Item English_Text = "Accepted Copy Applications (separate by ;)" ID = "2098"></Item>
+		<Item English_Text = "Include" ID = "2095"></Item>
+		<Item English_Text = "Exclude" ID = "2096"></Item>
+		
+		<Item English_Text = "Theme" ID = "2092"></Item>
+		<Item English_Text = "About Theme" ID = "2094"></Item>
+		
+		<Item English_Text = "Popup Position" ID = "2100"></Item>
+		<Item English_Text = "Display Font" ID = "2101"></Item>
+		<Item English_Text = "Database Path" ID = "2099"></Item>
+		
+		<Item English_Text = "Environment Variables" ID = "2165"></Item>
+		
+		<Item English_Text = "Default Font" ID = "2031"></Item>
+		
+		<Item English_Text = "Advanced" ID = "2124"></Item>
+	</DittoX_Options_General>
+	<DittoX_Options_Supported_Types>
+		<Item English_Text = "Add" ID = "1015"></Item>
+		<Item English_Text = "Delete" ID = "1016"></Item>
+		<Item English_Text = "Supported Types" ID = "-1" PropertyPage = "true"></Item>
+		
+		//New item added 12/17/16
+		<Item English_Text = "Current Clipboard Types" ID = "2128"></Item>
+		<Item English_Text = "Primary Clipboard Types" ID = "2145"></Item>
+		<Item English_Text = "Custom Clipboard Type" ID = "2130"></Item>
+		
+	</DittoX_Options_Supported_Types>
+	<DittoX_Options_Shortcuts>
+		<Item English_Text = "Activate DittoX" ID = "2048"></Item>
+		<Item English_Text = "Win" ID = "2035"></Item>
+		<Item English_Text = "Named Copy" ID = "2049"></Item>
+		<Item English_Text = "Win" ID = "2036"></Item>
+		<Item English_Text = "Keyboard Shortcuts" ID = "-1" PropertyPage = "true"></Item>
+		
+		//New item added in 3.15.1 8/18/07
+		<Item English_Text = "Send custom strokes Per Application" ID = "2091"></Item>
+		
+		//Added 12/17/16
+		<Item English_Text = "Activate DittoX" ID = "2064"></Item>
+		<Item English_Text = "Activate DittoX" ID = "2066"></Item>
+		
+		<Item English_Text = "Win" ID = "2063"></Item>
+		<Item English_Text = "Win" ID = "2065"></Item>
+		<Item English_Text = "Save Current Clipboard" ID = "2062"></Item>
+		<Item English_Text = "Win" ID = "2047"></Item>
+		
+		<Item English_Text = "Copy And Save Current Clipboard" ID = "2068"></Item>
+		
+	</DittoX_Options_Shortcuts>
+			<DittoX_Options_Stats>
+		<Item English_Text = "Odometer" ID = "2052"></Item>
+		<Item English_Text = "Trip Odometer" ID = "2053"></Item>
+		<Item English_Text = "Copies" ID = "2054"></Item>
+		<Item English_Text = "Pastes" ID = "2055"></Item>
+		<Item English_Text = "Copies" ID = "2056"></Item>
+		<Item English_Text = "Pastes" ID = "2057"></Item>
+		<Item English_Text = "Reset" ID = "1006"></Item>
+		<Item English_Text = "Saved Copies" ID = "2058"></Item>
+		<Item English_Text = "Saved Copy Data" ID = "2059"></Item>
+		<Item English_Text = "Remove All" ID = "1013"></Item>
+		<Item English_Text = "Last Started" ID = "2060"></Item>
+		<Item English_Text = "Database Size" ID = "2061"></Item>
+		<Item English_Text = "Clips Sent" ID = "2066"></Item>
+		<Item English_Text = "Clips received" ID = "2067"></Item>
+		<Item English_Text = "Since Last Start" ID = "2068"></Item>
+		<Item English_Text = "Stats" ID = "-1" PropertyPage = "true"></Item>
+	</DittoX_Options_Stats>
+	<DittoX_Options_Supported_Types_Add>
+		<Item English_Text = "Main Types" ID = "2052"></Item>
+		<Item English_Text = "Custom Type" ID = "2053"></Item>
+		<Item English_Text = "Add" ID = "1020"></Item>
+		<Item English_Text = "Currently on the Clipboard" ID = "2054"></Item>
+		<Item English_Text = "Add" ID = "1019"></Item>
+		<Item English_Text = "Add" ID = "1021"></Item>
+		<Item English_Text = "Cancel" ID = "2"></Item>
+		<Item English_Text = "Add Supported Type" ID = "-1"></Item>
+		<Item English_Text = "Current Clipboard Types" ID = "2128"></Item>
+		<Item English_Text = "Primary Clipboard Types" ID = "2145"></Item>
+		<Item English_Text = "Custom Clipboard Type" ID = "2130"></Item>
+	</DittoX_Options_Supported_Types_Add>
+	<DittoX_Move_To_Groups>
+		<Item English_Text = "New Group" ID = "1040"></Item>
+		<Item English_Text = "OK" ID = "1"></Item>
+		<Item English_Text = "Cancel" ID = "2"></Item>
+		<Item English_Text = "Move to Group" ID = "-1"></Item>
+	</DittoX_Move_To_Groups>
+	<DittoX_String_Table>
+		<Item English_Text = "General" ID = "GeneralTitle"></Item>
+		<Item English_Text = "Supported Types" ID = "SupportedTypesTitle"></Item>
+		<Item English_Text = "Stats" ID = "StatsTitle"></Item>		<Item English_Text = "Quick Paste" ID = "QuickPasteTitle"></Item>
+		<Item English_Text = "Keyboard Shortcuts" ID = "KeyboardShortcutsTitle"></Item>
+		<Item English_Text = "About DittoX" ID = "AboutTitle">About DittoX</Item>
+		<Item English_Text = "Version" ID = "About_Version">Version</Item>
+		<Item English_Text = "Exe Path" ID = "About_ExePath">Exe Path</Item>
+		<Item English_Text = "Database Path" ID = "About_DBPath">Database Path</Item>
+		<Item English_Text = "Credits" ID = "About_Credits">Credits</Item>
+		<Item English_Text = "Heptalune (github.com/Heptalune/DittoX)" ID = "About_Author">Heptalune (github.com/Heptalune/DittoX)</Item>
+		<Item English_Text = "DittoX Home Page - github.com/Heptalune/DittoX" ID = "About_HomePage">DittoX Home Page - github.com/Heptalune/DittoX</Item>
+		<Item English_Text = "DittoX Utils" ID = "Addin_DittoXUtil">DittoX Utils</Item>
+		<Item English_Text = "Paste Any Clip As Text" ID = "Addin_PasteAnyClipAsText">Paste Any Clip As Text</Item>
+		<Item English_Text = "Paste As html image link" ID = "Addin_PasteAsHtmlImageLink">Paste As html image link</Item>
+		<Item English_Text = "Clear read only flag" ID = "Addin_ClearReadOnly">Clear read only flag</Item>
+		<Item English_Text = "Set read only flag" ID = "Addin_SetReadOnly">Set read only flag</Item>
+		<Item English_Text = "Paste Removing Line Feeds" ID = "Addin_RemoveLineFeeds">Paste Removing Line Feeds</Item>
+		<Item English_Text = "Displays a list of clip formats allowing you to select one and paste the contents as text" ID = "Addin_Desc_PasteAnyClipAsText">Displays a list of clip formats allowing you to select one and paste the contents as text</Item>
+		<Item English_Text = "Converts a CF_DIB or CF_HDROP to a html format for pasting into outlook express" ID = "Addin_Desc_PasteAsHtmlImageLink">Converts a CF_DIB or CF_HDROP to a html format for pasting into outlook express</Item>
+		<Item English_Text = "Clears read only flag on the types CF_HDROP, or files paths in text" ID = "Addin_Desc_ClearReadOnly">Clears read only flag on the types CF_HDROP, or files paths in text</Item>
+		<Item English_Text = "Sets the read only flag on the types CF_HDROP, or files paths in text" ID = "Addin_Desc_SetReadOnly">Sets the read only flag on the types CF_HDROP, or files paths in text</Item>
+		<Item English_Text = "Version" ID = "Addin_Ver">Version</Item>
+		<Item English_Text = "Error Opening Database." ID = "Error_Opening_Database"></Item>
+		<Item English_Text = "Unable to initialize DAO/Jet db engine.\nSelect YES to download DAO from http://ditto-cp.sourceforge.net/dao_setup.exe\n\nRestart DittoX after installation of DAO." ID = "Error_Init_Dao"></Item>
+		<Item English_Text = "Unrecognized Database Format" ID = "Database_Format"></Item>
+		<Item English_Text = "the file will be renamed" ID = "File_Renamed"></Item>
+		<Item English_Text = "and a new database will be created" ID = "New_Database"></Item>
+		<Item English_Text = "Updates available for DittoX.\nVisit ditto-cp.sourceforge.net for details\n\nRunning Version" ID = "Updates_Available"></Item>
+		<Item English_Text = "Update Version" ID = "Update_Version"></Item>
+		<Item English_Text = "Download updated version?" ID = "Download_Update"></Item>			
+		<Item English_Text = "No updates available" ID = "No_Updates"></Item>			
+		<Item English_Text = "This will remove all Copy Entries!\n\nContinue?" ID = "Remove_All"></Item>
+		<Item English_Text = "Disconnect from Clipboard" ID = "Disconnect_Clipboard"></Item>
+		<Item English_Text = "Connect to Clipboard" ID = "Connect_Clipboard"></Item>
+		<Item English_Text = "Unable to initialize DAO/Jet db engine.  DAO will now be installed.\n\nRestart DittoX after installation of DAO." ID = "Error_Init_Dao_Intall"></Item>
+		<Item English_Text = "NO TARGET" ID = "No_Target"></Item>
+		
+		//New strings added in 3.6 6-9-06
+		<Item English_Text = "Prompt when deleting clips" ID = "2039"></Item>
+		<Item English_Text = "Delete Selected Clips?" ID = "Delete_Clip"></Item>
+		<Item English_Text = "Error importing exported clip" ID = "Error_Importing"></Item>
+		<Item English_Text = "Error parsing exported clip" ID = "Error_Parsing"></Item>
+		<Item English_Text = "Clip placed on clipboard" ID = "Importing_Good"></Item>
+		<Item English_Text = "Successfully imported" ID = "Import_Successfully"></Item>
+		<Item English_Text = "clip" ID = "Clip"></Item>
+		<Item English_Text = "clips" ID = "Clips"></Item>
+		<Item English_Text = "Update clip description on save?" ID = "Update_Desc"></Item>
+		<Item English_Text = "New Clip" ID = "New_Clip"></Item>
+		<Item English_Text = "Save" ID = "Save"></Item>
+		<Item English_Text = "Save All" ID = "Save_All"></Item>
+		<Item English_Text = "Close Current Tab" ID = "Close"></Item>
+		<Item English_Text = "Current Item is not editable.  A clip must have one of the clip types" ID = "NotEditable"></Item>
+		<Item English_Text = "to be editable" ID = "Editable"></Item>
+		<Item English_Text = "Do you want to save changes to" ID = "SaveChanges"></Item>
+		<Item English_Text = "Error saving clip" ID = "ErrorSaving"></Item>
+		<Item English_Text = "New" ID = "New"></Item>
+		<Item English_Text = "Save, Close and place on clipboard" ID = "Save_Close"></Item>
+		<Item English_Text = "DittoX Edit" ID = "DittoX_Edit"></Item>
+		<Item English_Text = "DittoX - Named Paste" ID = "Named_Paste_Title"></Item>
+		<Item English_Text = "Error loading data" ID = "Named_Paste_Error1"></Item>
+		<Item English_Text = "Error finding clip with QuickPaste Text of" ID = "Named_Paste_Error2"></Item>
+		<Item English_Text = "Exception finding the clip" ID = "Named_Paste_Error3"></Item>
+		<Item English_Text = "DittoX - Named Copy" ID = "Named_Copy_Title"></Item>
+		<Item English_Text = "Error saving Named Copy to Database" ID = "Named_Copy_Error1"></Item>
+		<Item English_Text = "Exception saving Named Copy" ID = "Named_Copy_Error2"></Item>
+		<Item English_Text = "DittoX did not receive a copy" ID = "Named_Copy_Error3"></Item> 
+		
+		//New strings added in 3.17 2-28-10
+		<Item English_Text = "Add-Ins" ID = "Add_Ins">Add-Ins</Item>
+		<Item English_Text = "Search Options" ID = "SearchOptionsTooltip"></Item>
+		<Item English_Text = "Groups" ID = "GroupsTooltip"></Item>
+		
+		//New strings added in 3.17 2-28-10
+		<Item English_Text = "Search" ID = "Search"></Item>
+		<Item English_Text = "Send All Copies" ID = "Send_All_Copies"></Item>
+        <Item English_Text = "IP/Name" ID = "IP_Name"></Item>
+        <Item English_Text = "Descriptions" ID = "Descriptions"></Item>		
+		<Item English_Text = "Hot Key" ID = "QPHotKey"></Item>
+		<Item English_Text = "Command" ID = "QPCommand"></Item>
+		
+		//ID changed from "top_most"
+		<Item English_Text = "[Always on top]" ID = "top_window"></Item>
+		
+		<Item English_Text = "[Disconnected]" ID = "disconnected"></Item>
+		<Item English_Text = "DittoX is running minimized, DittoX can be opened by hot keys or by clicking the task tray icon" ID = "StartupMsg"></Item>
+		<Item English_Text = "There are no results for" ID = "NoSearchResults"></Item>
+		<Item English_Text = "Warning this can take quite a long time and require up to double the hard drive space as your current database size, Continue?" ID = "CompactRepairWarning"></Item>
+		<Item English_Text = "Prompt For Name" ID = "prompt_for_name"></Item>
+		<Item English_Text = "(Follow windows light/dark themes)" ID = "FollowWindowsTheme"></Item>
+		
+		<Item English_Text = "Backing up database" ID = "BackupDbMsg"></Item>
+		<Item English_Text = "Restoring database" ID = "RestoreDbMsg"></Item>
+		
+		<Item English_Text = "DittoX was unable to open its database, waiting until it can be opened. Update the path in Options if needed. Path: " ID = "StartupNoDbMsg"></Item>
+				
+		<Item English_Text = "At Caret" ID = "AtCaret"></Item>
+		<Item English_Text = "At Cursor" ID = "AtCursor"></Item>
+		<Item English_Text = "At Previous Position" ID = "AtPreviousPosition"></Item>
+
+		<Item English_Text = "Take over system Win+V shortcut" ID = "WinVTakeover"></Item>
+		<Item English_Text = "Replaces the Windows Win+V clipboard history shortcut with DittoX.\nDisables system clipboard history and restarts Windows Explorer to apply.\nCtrl+V paste keeps working." ID = "WinVTakeoverHint">Replaces the Windows Win+V clipboard history shortcut with DittoX.\nDisables system clipboard history and restarts Explorer, Ctrl+V still works.</Item>
+		<Item English_Text = "Delete all clips that are not in a group, not in any group, not marked as never auto-delete, have no hot key, or are not marked as starred.\r\n\r\nThis operation cannot be undone." ID = "Delete_All_Non_Used_Clips"></Item>
+		<Item English_Text = "Delete Group?" ID = "Delete_Clip_Groups"></Item>
+		<Item English_Text = "No starred clips" ID = "NoStarredClips"></Item>
+		<Item English_Text = "[Starred clips]" ID = "starred_clips"></Item>
+
+	</DittoX_String_Table>
+	<DittoX_Options_Sheet>
+		<Item English_Text = "OK" ID = "1"></Item>
+		<Item English_Text = "Cancel" ID = "2"></Item>
+		<Item English_Text = "Apply" ID = "12321"></Item>
+	</DittoX_Options_Sheet>
+	<DittoX_Tray_Icon_Menu>
+		<Item English_Text = "Show Quick Paste" ID = "32773"></Item>
+		<Item English_Text = "Options" ID = "32771"></Item>
+		<Item English_Text = "Help" ID = "32843"></Item>
+		<Item English_Text = "Exit" ID = "32772"></Item>
+
+		//New strings added in 3.6 6-9-06
+		<Item English_Text = "Import" ID = "32854"></Item>
+		<Item English_Text = "New Clip" ID = "32868"></Item>
+		
+		//Added 12/10/11
+		<Item English_Text = "Global Hot Keys" ID = "32872"></Item>
+		
+		//Added 1/10/15
+		<Item English_Text = "Delete Clip Data" ID = "32886"></Item>
+		
+		//Added 12/17/16
+		<Item English_Text = "Fixup Sticky Clip Order" ID = "32909"></Item>		
+		<Item English_Text = "Save Current Clipboard" ID = "32904"></Item>
+		
+		<Item English_Text = "Show Startup Message" ID = "32959"></Item>
+		
+		<Item English_Text = "Backup Database" ID = "32960"></Item>
+		<Item English_Text = "Restore Database" ID = "32961"></Item>
+		
+		<Item English_Text = "Delete All Non Used Clips" ID = "32969"></Item>
+		
+	</DittoX_Tray_Icon_Menu>
+
+	//Added in 9-11-09
+		
+	<DittoX_GlobalHotKeys>
+		<Item English_Text = "Global Hot Keys" ID = "-1"></Item>
+		<Item English_Text = "Close" ID = "2"></Item>
+		<Item English_Text = "(Clip) " ID = "(Clip)"></Item>
+		<Item English_Text = "Error" ID = "Error"></Item>
+		<Item English_Text = "Yes" ID = "Yes"></Item>
+		<Item English_Text = "Description" ID = "Description"></Item>
+		<Item English_Text = "HotKey" ID = "HotKey"></Item>
+		<Item English_Text = "Registered" ID = "Registered"></Item>
+	</DittoX_GlobalHotKeys>
+
+	//Added 1/10/15
+	<DittoX_Groups_Right_Click_Menu>
+		<Item English_Text = "New Sub Group" ID = "32896"></Item>
+		<Item English_Text = "Delete Group" ID = "32897"></Item>
+		<Item English_Text = "Properties" ID = "32898"></Item>	
+	</DittoX_Groups_Right_Click_Menu>
+	
+	//Added 1/10/15
+	<DittoX_DeleteClipData>
+		<Item English_Text = "Delete Clip Data" ID = "-1"></Item>
+		<Item English_Text = "Each clip in DittoX is made of multiple clipboard items, all clipboard items in DittoX are listed below." ID = "2126"></Item>
+		<Item English_Text = "Search Options" ID = "2120"></Item>
+		<Item English_Text = "Title" ID = "1042"></Item>
+		<Item English_Text = "Create Date Range" ID = "1043"></Item>
+		<Item English_Text = "Format" ID = "1045"></Item>
+		<Item English_Text = "Last Used Range" ID = "1044"></Item>
+		<Item English_Text = "Search" ID = "1040"></Item>
+		<Item English_Text = "Database Size" ID = "2115"></Item>
+		<Item English_Text = "Selected Size" ID = "2116"></Item>
+		<Item English_Text = "Selected Count" ID = "2117"></Item>
+		<Item English_Text = "Delete" ID = "2118"></Item>
+		<Item English_Text = "Cancel" ID = "2"></Item>
+		<Item English_Text = "Title" ID = "Title"></Item>
+		<Item English_Text = "Created" ID = "Created"></Item>
+		<Item English_Text = "Last Used" ID = "LastUsed"></Item>
+		<Item English_Text = "Format" ID = "Format"></Item>
+		<Item English_Text = "Data Size" ID = "DataSize"></Item>
+		<Item English_Text = "Quick Paste Text" ID = "QuickPasteText"></Item>
+	</DittoX_DeleteClipData>
+	
+		
+</DittoX_Language_File>
