@@ -23,16 +23,13 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define ROW_BOTTOM_BORDER		4
-#define ROW_LEFT_BORDER			3
+#define ROW_BOTTOM_BORDER		8
+#define ROW_LEFT_BORDER			8
 #define COLOR_SHADOW			RGB(245, 245, 245)
 #define DUMMY_COL_WIDTH			2
 
-#define TIMER_SHOW_PROPERTIES	1
 #define TIMER_HIDE_SCROL	2
 #define TIMER_SHOW_SCROLL	3
-
-#define VALID_TOOLTIP (m_pToolTip && ::IsWindow(m_pToolTip->m_hWnd))
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -203,13 +200,11 @@ CQListCtrl::CQListCtrl()
 	m_pwchTip = NULL;
 	m_linesPerRow = 1;
 	m_windowDpi = NULL;
-	m_pToolTip = NULL;
 	m_pFormatter = NULL;
 	m_allSelected = false;
 	m_rowHeight = 50;
 	m_mouseOverScrollAreaStart = 0;
 	m_showIfClipWasPasted = TRUE;
-	m_pToolTipActions = NULL;
 }
 
 CQListCtrl::~CQListCtrl()
@@ -471,7 +466,15 @@ void CQListCtrl::OnCustomdrawList(NMHDR* pNMHDR, LRESULT* pResult)
 			}
 		}
 
-		pDC->FillSolidRect(rcItem, crBkgnd);
+		// Win11 style: inset card with rounded corners on the window background.
+		CRect rcCard = rcItem;
+		rcCard.DeflateRect(m_windowDpi->Scale(2), m_windowDpi->Scale(2),
+			m_windowDpi->Scale(2), m_windowDpi->Scale(2));
+		CRgn rgnCard;
+		rgnCard.CreateRoundRectRgn(rcCard.left, rcCard.top, rcCard.right, rcCard.bottom,
+			m_windowDpi->Scale(6), m_windowDpi->Scale(6));
+		pDC->FillRgn(&rgnCard, &CBrush(crBkgnd));
+
 		nOldBKMode = pDC->SetBkMode(TRANSPARENT);
 
 		CRect rcText = rcItem;
@@ -1271,11 +1274,6 @@ int CQListCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		EnableToolTips(FALSE);
 	}
 
-	//m_pToolTip = new CToolTipEx;
-	//m_pToolTip->Create(this);
-
-	//m_pToolTip->SetNotifyWnd(GetParent());
-
 	return 0;
 }
 
@@ -1298,12 +1296,6 @@ BOOL CQListCtrl::PreTranslateMessage(MSG* pMsg)
 		}
 
 		return TRUE;
-	}
-
-	if (VALID_TOOLTIP)
-	{
-		if (m_pToolTip->OnMsg(pMsg))
-			return TRUE;
 	}
 
 	switch (pMsg->message)
@@ -1334,16 +1326,6 @@ BOOL CQListCtrl::PreTranslateMessage(MSG* pMsg)
 
 BOOL CQListCtrl::HandleKeyDown(WPARAM wParam, LPARAM lParam)
 {
-	if (VALID_TOOLTIP)
-	{
-		MSG Msg;
-		Msg.lParam = lParam;
-		Msg.wParam = wParam;
-		Msg.message = WM_KEYDOWN;
-		if (m_pToolTip->OnMsg(&Msg))
-			return TRUE;
-	}
-
 	WPARAM vk = wParam;
 
 	switch (vk)
@@ -1392,265 +1374,6 @@ BOOL CQListCtrl::HandleKeyDown(WPARAM wParam, LPARAM lParam)
 	} // end switch(vk)
 
 	return FALSE;
-}
-
-bool CQListCtrl::PostEventLoadedCheckDescription(int updatedRow)
-{
-	bool loadedClip = false;
-
-	if (VALID_TOOLTIP)
-	{
-		int toolTipClipId = m_pToolTip->GetClipId();
-		int toolTipClipRow = m_pToolTip->GetClipRow();
-
-		if (toolTipClipRow >= 0)
-		{
-			log(StrF(_T("PostEventLoadedCheckDescription refreshRow: %d tt_row: %d tt_id: %d"), updatedRow, toolTipClipRow, toolTipClipId));
-		}
-
-		//We tried to show the clip but we didn't have the id yet, it was loaded in a thread, now it's being updated
-		//see if we need to show this rows description
-		if (toolTipClipId <= 0 &&
-			toolTipClipRow == updatedRow &&
-			::IsWindow(m_toolTipHwnd))
-		{
-			ShowFullDescription(false, true);
-			loadedClip = true;
-		}
-	}
-
-	return loadedClip;
-}
-
-bool CQListCtrl::ShowFullDescription(bool bFromAuto, bool fromNextPrev)
-{
-	if (this->GetSelectedCount() == 0)
-	{
-		return false;
-	}
-
-	int clipRow = this->GetCaret();
-	int clipId = this->GetItemData(clipRow);
-
-	log(StrF(_T("Show full description row: %d id: %d"), clipRow, clipId));
-
-	if (VALID_TOOLTIP &&
-		clipId > 0 &&
-		m_pToolTip->GetClipId() == clipId &&
-		::IsWindow(m_toolTipHwnd))
-	{
-		return false;
-	}
-
-	int nItem = GetCaret();
-	CRect rc, crWindow;
-	GetWindowRect(&crWindow);
-	GetItemRect(nItem, rc, LVIR_BOUNDS);
-	ClientToScreen(rc);
-
-	CPoint pt;
-
-	if (CGetSetOptions::GetRememberDescPos())
-	{
-		CGetSetOptions::GetDescWndPoint(pt);
-	}
-	else if (bFromAuto == false)
-	{
-		pt = CPoint(rc.left, rc.bottom);
-	}
-	else
-	{
-		pt = CPoint((crWindow.left + (crWindow.right - crWindow.left) / 2), rc.bottom);
-	}
-
-	CString csDescription;
-	GetToolTipText(nItem, csDescription);
-
-	if (m_pToolTip == NULL ||
-		//fromNextPrev == false ||
-		::IsWindow(m_toolTipHwnd) == FALSE)
-	{
-		if (m_pToolTip != NULL)
-		{
-			m_pToolTip->DestroyWindow();
-		}
-
-		m_pToolTip = new CToolTipEx;
-		m_pToolTip->Create(this);
-		m_toolTipHwnd = m_pToolTip->GetSafeHwnd();
-		m_pToolTip->SetNotifyWnd(GetParent());
-	}
-	else if (VALID_TOOLTIP)
-	{
-		if (fromNextPrev)
-		{
-			CRect r;
-			m_pToolTip->GetWindowRectEx(r);
-			pt = r.TopLeft();
-		}
-
-		m_pToolTip->SetGdiplusBitmap(NULL);
-		m_pToolTip->SetRTFText("");
-		m_pToolTip->SetToolTipText(_T(""));
-		m_pToolTip->SetFolderPath(_T(""));
-	}
-
-	if (VALID_TOOLTIP)
-	{
-		m_pToolTip->SetTooltipActions(m_pToolTipActions);
-		m_pToolTip->SetClipId(clipId);
-		m_pToolTip->SetClipRow(clipRow);
-		m_pToolTip->SetSearchText(m_searchText);
-		LOGFONT lf;
-		m_Font.GetLogFont(&lf);
-		lf.lfHeight = m_windowDpi->UnScale(lf.lfHeight);
-		m_pToolTip->SetLogFont(&lf, FALSE);
-
-		m_pToolTip->SetClipData(_T(""));
-		m_pToolTip->SetToolTipText(_T(""));
-		m_pToolTip->SetRTFText("");
-		bool bSetPlainText = false;
-
-		CClipFormat Clip;
-
-		try
-		{
-			CppSQLite3Query q = theApp.m_db.execQueryEx(_T("SELECT lID, lDate, lastPasteDate, lDontAutoDelete, QuickPasteText, lShortCut, globalShortCut, stickyClipOrder, stickyClipGroupOrder, lParentID FROM Main WHERE lID = %d"), clipId);
-			if (q.eof() == false)
-			{
-				CString clipData;
-				COleDateTime time((time_t)q.getInt64Field(_T("lDate")));
-				clipData += "Added: " + time.Format();
-
-				COleDateTime modified((time_t)q.getInt64Field(_T("lastPasteDate")));
-				clipData += _T(" | Last Used: ") + modified.Format();
-
-				if (q.getIntField(_T("lDontAutoDelete")) > 0)
-				{
-					clipData += _T(" | Never Auto Delete");
-				}
-
-				CString csQuickPaste = q.getStringField(_T("QuickPasteText"));
-				if (csQuickPaste.IsEmpty() == FALSE)
-				{
-					clipData += _T(" | Quick Paste = ");
-					clipData += csQuickPaste;
-				}
-
-				int shortCut = q.getIntField(_T("lShortCut"));
-				if (shortCut > 0)
-				{
-					clipData += _T(" | ");
-					clipData += CHotKey::GetHotKeyDisplayStatic(shortCut);
-
-					BOOL globalShortCut = q.getIntField(_T("globalShortCut"));
-					if (globalShortCut)
-					{
-						clipData += _T(" - Global Shortcut Key");
-					}
-				}
-
-				if (theApp.m_GroupID > 0)
-				{
-					int sticky = q.getIntField(_T("stickyClipGroupOrder"));
-					if (sticky != INVALID_STICKY)
-					{
-						clipData += _T(" | ");
-						clipData += _T(" - Sticky In Group");
-					}
-				}
-				else
-				{
-					int sticky = q.getIntField(_T("stickyClipOrder"));
-					if (sticky != INVALID_STICKY)
-					{
-						clipData += _T(" | ");
-						clipData += _T(" - Sticky");
-					}
-				}
-
-				int parentId = q.getIntField(_T("lParentID"));
-				if (parentId > 0)
-				{
-					CString folder = FolderPath(parentId);
-
-					m_pToolTip->SetFolderPath(folder);
-				}
-
-				m_pToolTip->SetClipData(clipData);
-			}
-		}
-		CATCH_SQLITE_EXCEPTION
-
-		Clip.m_cfType = CF_UNICODETEXT;
-		if (GetClipData(nItem, Clip) && Clip.m_hgData)
-		{
-			m_pToolTip->SetToolTipText(Clip.GetAsCString());
-			bSetPlainText = true;
-
-			Clip.Free();
-			Clip.Clear();
-		}
-
-		if (bSetPlainText == false)
-		{
-			Clip.m_cfType = CF_TEXT;
-			if (GetClipData(nItem, Clip) && Clip.m_hgData)
-			{
-				CString cs(Clip.GetAsCStringA());
-
-				m_pToolTip->SetToolTipText(cs);
-				bSetPlainText = true;
-
-				Clip.Free();
-				Clip.Clear();
-			}
-		}
-
-		if (bSetPlainText == false)
-		{
-			m_pToolTip->SetToolTipText(csDescription);
-		}
-
-		Clip.m_cfType = RegisterClipboardFormat(CF_RTF);
-
-		if (GetClipData(nItem, Clip) && Clip.m_hgData)
-		{
-			m_pToolTip->SetRTFText(Clip.GetAsCStringA());
-
-			Clip.Free();
-			Clip.Clear();
-		}
-
-		m_pToolTip->SetHtmlText(_T(""));
-		Clip.m_cfType = GetFormatID(_T("HTML Format"));
-		if (GetClipData(nItem, Clip) && Clip.m_hgData)
-		{
-			CString html = CTextConvert::Utf8ToUnicode(Clip.GetAsCStringA());
-			m_pToolTip->SetHtmlText(html);
-
-			Clip.Free();
-			Clip.Clear();
-		}
-
-		Clip.m_cfType = CF_DIB;
-		if (GetClipData(nItem, Clip) && Clip.m_hgData)
-		{
-			m_pToolTip->SetGdiplusBitmap(Clip.CreateGdiplusBitmap());
-		}
-		else
-		{
-			Clip.m_cfType = theApp.m_PNG_Format;
-			if (GetClipData(nItem, Clip) && Clip.m_hgData)
-			{
-				m_pToolTip->SetGdiplusBitmap(Clip.CreateGdiplusBitmap());
-			}
-		}
-
-		m_pToolTip->Show(pt);
-	}
-
-	return true;
 }
 
 void CQListCtrl::GetToolTipText(int nItem, CString& csText)
@@ -1780,17 +1503,6 @@ void CQListCtrl::DestroyAndCreateAccelerator(BOOL bCreate, CppSQLite3DB& db)
 void CQListCtrl::OnKillFocus(CWnd* pNewWnd)
 {
 	CListCtrl::OnKillFocus(pNewWnd);
-
-	//if(FocusOnToolTip() == FALSE)
-		//m_pToolTip->Hide();
-}
-
-HWND CQListCtrl::GetToolTipHWnd()
-{
-	if (VALID_TOOLTIP)
-		return m_pToolTip->GetSafeHwnd();
-
-	return NULL;
 }
 
 BOOL CQListCtrl::SetItemCountEx(int iCount, DWORD dwFlags /* = 0 */)
@@ -1812,16 +1524,6 @@ void CQListCtrl::OnSelectionChange(NMHDR* pNMHDR, LRESULT* pResult)
 			pParent->PostMessage(NM_UPDATE_SCROLLBAR, FALSE, 0);
 		}
 
-		if (VALID_TOOLTIP &&
-			::IsWindowVisible(m_pToolTip->m_hWnd))
-		{
-			this->ShowFullDescription(false, true);
-		}
-		if (CGetSetOptions::m_bAllwaysShowDescription)
-		{
-			KillTimer(TIMER_SHOW_PROPERTIES);
-			SetTimer(TIMER_SHOW_PROPERTIES, 300, NULL);
-		}
 		if (GetSelectedCount() > 0)
 			theApp.SetStatus(NULL, FALSE);
 	}
@@ -1851,16 +1553,6 @@ void CQListCtrl::OnTimer(UINT_PTR nIDEvent)
 
 	switch (nIDEvent)
 	{
-	case TIMER_SHOW_PROPERTIES:
-	{
-		if (theApp.m_bShowingQuickPaste)
-			ShowFullDescription(true);
-		KillTimer(TIMER_SHOW_PROPERTIES);
-
-		callBase = false;
-	}
-	break;
-
 	case TIMER_HIDE_SCROL:
 	{
 		CPoint cursorPos;
@@ -2051,85 +1743,6 @@ void CQListCtrl::StopHideScrollBarTimer()
 void CQListCtrl::SetSearchText(CString text)
 {
 	m_searchText = text;
-}
-
-void CQListCtrl::HidePopup(bool checkShowPersistant)
-{
-	if (VALID_TOOLTIP)
-	{
-		if (checkShowPersistant == false ||
-			m_pToolTip->GetShowPersistant() == false)
-		{
-			m_pToolTip->Hide();
-		}
-	}
-}
-
-BOOL CQListCtrl::IsToolTipWindowVisible()
-{
-	if (VALID_TOOLTIP)
-	{
-		return ::IsWindowVisible(m_toolTipHwnd);
-	}
-
-	return FALSE;
-}
-
-void CQListCtrl::ToggleToolTipShowPersistant()
-{
-	if (VALID_TOOLTIP)
-	{
-		m_pToolTip->ToggleShowPersistant();
-	}
-}
-
-bool CQListCtrl::ToggleToolTipWordWrap()
-{
-	bool didWordWrap = false;
-	if (VALID_TOOLTIP)
-	{
-		didWordWrap = m_pToolTip->ToggleWordWrap();
-	}
-
-	return didWordWrap;
-}
-
-
-BOOL CQListCtrl::IsToolTipWindowFocus()
-{
-	if (VALID_TOOLTIP)
-	{
-		return ::GetFocus() == m_toolTipHwnd ||
-			::GetParent(::GetFocus()) == m_toolTipHwnd;
-	}
-
-	return FALSE;
-}
-
-bool CQListCtrl::IsToolTipShowPersistant()
-{
-	if (VALID_TOOLTIP)
-	{
-		return m_pToolTip->GetShowPersistant();
-	}
-
-	return false;
-}
-
-void CQListCtrl::DoToolTipSearch()
-{
-	if (VALID_TOOLTIP)
-	{
-		return m_pToolTip->DoSearch();
-	}
-}
-
-void CQListCtrl::HideToolTip()
-{
-	if (VALID_TOOLTIP)
-	{
-		m_pToolTip->Hide();
-	}
 }
 
 void CQListCtrl::OnDpiChanged()

@@ -17,6 +17,7 @@
 #define CAPTION_TOP		4
 
 #define TOGGLES_ALLWAYS_ON_TOP				1
+// Deprecated: the description window was removed; value kept so existing configs stay valid
 #define TOGGLES_ALLWAYS_SHOW_DESCRIPTION	2
 #define	ROLLES_UP_WINDOW					3
 
@@ -182,10 +183,6 @@ public:
 	static BOOL		m_bDescShowLeadingWhiteSpace;
 	static void		SetDescShowLeadingWhiteSpace(BOOL bVal);
 	static BOOL		GetDescShowLeadingWhiteSpace();
-
-	static BOOL		m_bAllwaysShowDescription;
-	static void		SetAllwaysShowDescription(long bShow);
-	static BOOL		GetAllwaysShowDescription();
 
 	static long		m_bDoubleClickingOnCaptionDoes;
 	static void		SetDoubleClickingOnCaptionDoes(long lOption);
@@ -408,9 +405,6 @@ public:
 	static void		SetPasteAsAdmin(BOOL val);
 	static BOOL		GetPasteAsAdmin();
 
-	static void		SetRememberDescPos(BOOL val);
-	static BOOL		GetRememberDescPos();
-
 	static void		SetSizeDescWindowToContent(BOOL val);
 	static BOOL		GetSizeDescWindowToContent();
 
@@ -491,9 +485,6 @@ public:
 
 	static BOOL GetMouseClickHidesDescription();
 	static void SetMouseClickHidesDescription(int val);
-
-	static BOOL GetWrapDescriptionText();
-	static void SetWrapDescriptionText(int val);
 
 	static int GetDelayRenderLockout();
 	static void SetDelayRenderLockout(int val);

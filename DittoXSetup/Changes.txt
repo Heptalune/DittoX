@@ -4,6 +4,7 @@ v0.3.0
 - 删除：最后十个复制项目的全局热键（设置页、全局热键、窗口内 Ctrl+1~0）
 - 删除：粘贴前 N 项（PASTE_POSITION_* 使用处；枚举定义保留并标记 Deprecated）
 - 删除：比较功能（ClipCompare 源码、菜单、设置项、临时目录分支）
+- 删除：「查看完整说明」功能（说明浮窗、右键选项菜单、DeleteClipData 全部相关代码、Options 相关设置、resource.h 13 个废弃 ID、6 份语言文件 72 条废弃语言键；CToolTipEx 核心显示 API 保留用于命令行错误弹窗）
 - 修复：快捷粘贴右键菜单里残留的「发送到」好友菜单项
 - 调整：关于页重做——移除邮件链接，主页指向 github.com/Heptalune/DittoX，内容走语言文件
 - 修复：移除从未使用的模板对话框 IDD_ABOUTBOX

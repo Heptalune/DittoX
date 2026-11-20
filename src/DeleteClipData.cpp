@@ -19,7 +19,6 @@ IMPLEMENT_DYNAMIC(CDeleteClipData, CDialog)
 
 CDeleteClipData::CDeleteClipData(CWnd* pParent /*=NULL*/)
 	: CDialog(CDeleteClipData::IDD, pParent)
-	, m_pDescriptionWindow(nullptr)
 	, m_clipTitle(_T(""))
 	, m_filterByClipTitle(FALSE)
 	, m_filterByCreatedDate(FALSE)
@@ -204,19 +203,7 @@ void CDeleteClipData::OnClose()
 		return;
 	}
 
-	CloseDescriptionWindow();
 	DestroyWindow();
-}
-
-void CDeleteClipData::CloseDescriptionWindow()
-{
-	if (m_pDescriptionWindow != nullptr)
-	{
-		m_pDescriptionWindow->CloseWindow();
-		m_pDescriptionWindow->DestroyWindow();
-		delete m_pDescriptionWindow;
-		m_pDescriptionWindow = nullptr;
-	}
 }
 
 void CDeleteClipData::OnSize(UINT nType, int cx, int cy)
@@ -242,11 +229,6 @@ void CDeleteClipData::OnBnClickedButtonSearch()
 
 void CDeleteClipData::FilterItems()
 {
-	if (m_pDescriptionWindow != nullptr)
-	{
-		m_pDescriptionWindow->Hide();
-	}
-
 	UpdateData();
 
 	//First search the already filtered text, see if we need to add them back in
@@ -396,35 +378,6 @@ void CDeleteClipData::OnLvnKeydownList2(NMHDR *pNMHDR, LRESULT *pResult)
 			}
 		}
 		break;
-		case VK_F3:
-		{
-			CreateAndShowDescriptionWindow();
-			*pResult = 1;
-		}
-		break;
-		case 'N':
-		{
-			int nSelItem = m_clipList.GetNextItem(-1, LVNI_SELECTED);
-			if (nSelItem != -1 && nSelItem < m_clipList.GetItemCount() - 1)
-			{
-				SelectRow(nSelItem + 1);
-				CreateAndShowDescriptionWindow();
-			}
-			*pResult = 1;
-		}
-		break;
-		case 'P':
-		{
-			int nSelItem = m_clipList.GetNextItem(-1, LVNI_SELECTED);
-			if (nSelItem != -1 && nSelItem > 0)
-			{
-				SelectRow(nSelItem - 1);
-				CreateAndShowDescriptionWindow();
-			}
-
-			*pResult = 1;
-		}
-		break;
 		default:
 			*pResult = 0;
 			break;
@@ -434,13 +387,10 @@ void CDeleteClipData::OnLvnKeydownList2(NMHDR *pNMHDR, LRESULT *pResult)
 void CDeleteClipData::OnLvnItemchangedList2(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	
+
 	POSITION pos = m_clipList.GetFirstSelectedItemPosition();
 	__int64 selectedDataSize = 0;
 	int selectedCount = 0;
-	bool setDescriptionWindowText = false;
-
-	int nCaretItem = m_clipList.GetNextItem(-1, LVNI_FOCUSED);
 
 	if (pos != nullptr)
 	{
@@ -452,23 +402,6 @@ void CDeleteClipData::OnLvnItemchangedList2(NMHDR *pNMHDR, LRESULT *pResult)
 			{
 				selectedDataSize += m_data[row].m_dataSize;
 				selectedCount++;
-
-				if (row == nCaretItem &&
-					setDescriptionWindowText == false &&
-					m_pDescriptionWindow != nullptr && 
-					m_pDescriptionWindow->IsWindowVisible())
-				{
-					SetDescriptionWindowText(row);
-
-					CRect r;
-					m_pDescriptionWindow->GetWindowRectEx(r);
-					CPoint pt;
-					pt = r.TopLeft();
-
-					m_pDescriptionWindow->Show(pt);
-
-					setDescriptionWindowText = true;
-				}
 			}
 		}
 	}
@@ -683,7 +616,6 @@ void CDeleteClipData::OnBnClickedClose()
 		m_cancelDelete = true;
 		return;
 	}
-	CloseDescriptionWindow();
 	DestroyWindow();
 }
 
@@ -865,14 +797,6 @@ BOOL CDeleteClipData::PreTranslateMessage(MSG* pMsg)
 			FilterItems();
 			return TRUE;                // Do not process further
 		}
-		else if (pMsg->wParam == VK_ESCAPE)
-		{
-			if (m_pDescriptionWindow != nullptr)
-			{
-				m_pDescriptionWindow->Hide();
-				return TRUE;
-			}
-		}
 	}
 
 	return CDialog::PreTranslateMessage(pMsg);
@@ -912,163 +836,6 @@ BOOL CDeleteClipData::SetSelection(int nRow, BOOL bSelect)
 		return m_clipList.SetItemState(nRow, ~LVIS_SELECTED, LVIS_SELECTED);
 }
 
-void CDeleteClipData::CreateAndShowDescriptionWindow()
-{
-	if (m_pDescriptionWindow == nullptr)
-	{
-		m_pDescriptionWindow = new CToolTipEx;
-		m_pDescriptionWindow->Create(this);
-		m_pDescriptionWindow->SetNotifyWnd(GetParent());
-	}
-
-	POSITION pos = m_clipList.GetFirstSelectedItemPosition();
-	if (pos != nullptr)
-	{
-		INT_PTR row = m_clipList.GetNextSelectedItem(pos);
-		if (row >= 0 && row < (INT_PTR)m_data.size())
-		{
-			SetDescriptionWindowText(row);			
-
-			CRect rc;
-			this->GetWindowRect(rc);
-
-			CPoint pt;
-			pt = CPoint(rc.right, rc.top);
-
-			m_pDescriptionWindow->Show(pt);
-		}
-	}
-}
-
-void CDeleteClipData::SetDescriptionWindowText(INT_PTR row)
-{
-	m_pDescriptionWindow->SetGdiplusBitmap(NULL);
-	m_pDescriptionWindow->SetRTFText("");
-	m_pDescriptionWindow->SetHtmlText("");
-	m_pDescriptionWindow->SetToolTipText(_T(""));
-	m_pDescriptionWindow->SetFolderPath(_T(""));
-
-	m_pDescriptionWindow->SetToolTipText(m_data[row].m_Desc);
-
-	CClip selectedClip;
-	selectedClip.LoadMainTable(m_data[row].m_lID);
-	selectedClip.LoadFormats(m_data[row].m_lID, false, false, m_data[row].m_DatalID);
-
-	CString clipData;
-	COleDateTime time(selectedClip.m_Time.GetTime());
-	clipData += "Added: " + time.Format();
-
-	COleDateTime modified(selectedClip.m_lastPasteDate.GetTime());
-	clipData += _T(" | Last Used: ") + modified.Format();
-
-	if(selectedClip.m_dontAutoDelete > 0)
-	{
-		clipData += _T(" | Never Auto Delete");
-	}
-
-	CString csQuickPaste = selectedClip.m_csQuickPaste;
-	if (csQuickPaste.IsEmpty() == FALSE)
-	{
-		clipData += _T(" | Quick Paste = ");
-		clipData += csQuickPaste;
-	}
-
-	int shortCut = selectedClip.m_shortCut;
-	if (shortCut > 0)
-	{
-		clipData += _T(" | ");
-		clipData += CHotKey::GetHotKeyDisplayStatic(shortCut);
-
-		BOOL globalShortCut = selectedClip.m_globalShortCut;
-		if (globalShortCut)
-		{
-			clipData += _T(" - Global Shortcut Key");
-		}
-	}
-
-	if (theApp.m_GroupID > 0)
-	{
-		int sticky = selectedClip.m_stickyClipGroupOrder;
-		if (sticky != INVALID_STICKY)
-		{
-			clipData += _T(" | ");
-			clipData += _T(" - Sticky In Group");
-		}
-	}
-	else
-	{
-		int sticky = selectedClip.m_stickyClipOrder;
-		if (sticky != INVALID_STICKY)
-		{
-			clipData += _T(" | ");
-			clipData += _T(" - Sticky");
-		}
-	}
-
-	int parentId = selectedClip.m_parentId;
-	if (parentId > 0)
-	{
-		CString folder = FolderPath(parentId);
-
-		m_pDescriptionWindow->SetFolderPath(folder);
-	}
-
-	m_pDescriptionWindow->SetClipData(clipData);
-
-	IClipFormat* format = selectedClip.Clips()->FindFormatEx(CF_UNICODETEXT);
-	if (format != nullptr)
-	{
-		m_pDescriptionWindow->SetToolTipText(format->GetAsCString());
-	}
-	
-	if (format == NULL)
-	{
-		format = selectedClip.Clips()->FindFormatEx(CF_TEXT);
-		if (format != nullptr)
-		{
-			CString cs(format->GetAsCStringA());
-			m_pDescriptionWindow->SetToolTipText(cs);
-		}
-	}
-
-	if (format == nullptr)
-	{
-		IClipFormat* format = selectedClip.Clips()->FindFormatEx(GetFormatID(CF_RTF));
-		if (format != nullptr)
-		{
-			m_pDescriptionWindow->SetRTFText(format->GetAsCStringA());
-		}
-	}
-
-	if (format == nullptr)
-	{
-		IClipFormat* format = selectedClip.Clips()->FindFormatEx(GetFormatID(_T("HTML Format")));
-		if (format != nullptr)
-		{
-			CString html = CTextConvert::Utf8ToUnicode(format->GetAsCStringA());
-			m_pDescriptionWindow->SetHtmlText(html);
-		}
-	}
-
-	if (format == nullptr)
-	{
-		IClipFormat* format = selectedClip.Clips()->FindFormatEx(CF_DIB);
-		if (format != nullptr)
-		{
-			m_pDescriptionWindow->SetGdiplusBitmap(format->CreateGdiplusBitmap());
-		}
-	}
-
-	if (format == nullptr)
-	{
-		IClipFormat* format = selectedClip.Clips()->FindFormatEx(theApp.m_PNG_Format);
-		if (format != nullptr)
-		{
-			m_pDescriptionWindow->SetGdiplusBitmap(format->CreateGdiplusBitmap());
-		}
-	}
-}
-
 void CDeleteClipData::OnContextMenu(CWnd* pWnd, CPoint point)
 {
 	CMenu menu;
@@ -1082,11 +849,6 @@ void CDeleteClipData::OnContextMenu(CWnd* pWnd, CPoint point)
 
 		switch (nID)
 		{
-			case ID__VIEWFULLDESCRIPTION:
-			{
-				CreateAndShowDescriptionWindow();
-			}
-			break;
 			case ID__SAVETOFILE:
 			{
 				int row = m_clipList.GetNextItem(-1, LVNI_SELECTED);

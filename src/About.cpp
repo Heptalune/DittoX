@@ -39,6 +39,7 @@ void CAbout::DoDataExchange(CDataExchange* pDX)
 	CPropertyPage::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CAbout)
 	DDX_Control(pDX, IDC_STATIC_LINK, m_Link);
+	DDX_Control(pDX, IDC_STATIC_UPLINK, m_UpstreamLink);
 	DDX_Control(pDX, IDC_LIST, m_List);
 	//}}AFX_DATA_MAP
 }
@@ -91,6 +92,9 @@ BOOL CAbout::OnInitDialog()
 
 	m_List.AddString(_T(""));
 
+	m_List.AddString(theApp.m_Language.GetString("About_UpstreamTitle", "上游项目"));
+	m_List.AddString(_T("    ") + theApp.m_Language.GetString("About_UpstreamDesc", "本软件基于开源项目 sabrogden/Ditto 修改而来，感谢原版作者与所有贡献者。"));
+
 	m_List.AddString(theApp.m_Language.GetString("Add_Ins", "加载项"));
 
 	//Show what addins are loaded
@@ -105,17 +109,23 @@ BOOL CAbout::OnInitDialog()
 	CRect rect;
 	GetClientRect(rect);
 
-	rect.bottom -= 24;
+	rect.bottom -= 40;
 
 	m_List.MoveWindow(rect);
 
-	rect.top = rect.bottom + 8;
-	rect.bottom = rect.top + 16;
+	rect.top = rect.bottom + 6;
+	rect.bottom = rect.top + 14;
 
 	m_Link.MoveWindow(rect);
 	m_Link.SetURL(_T("https://github.com/Heptalune/DittoX"));
-
 	m_Link.SetWindowText(theApp.m_Language.GetString("About_HomePage", "DittoX 主页 - github.com/Heptalune/DittoX"));
+
+	rect.top = rect.bottom + 4;
+	rect.bottom = rect.top + 14;
+
+	m_UpstreamLink.MoveWindow(rect);
+	m_UpstreamLink.SetURL(_T("https://github.com/sabrogden/Ditto"));
+	m_UpstreamLink.SetWindowText(theApp.m_Language.GetString("About_UpstreamLink", "Ditto 上游项目 - github.com/sabrogden/Ditto"));
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE

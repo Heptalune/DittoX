@@ -33,7 +33,6 @@ BOOL CGetSetOptions::m_bShowPersistent;
 BOOL CGetSetOptions::m_bHideDittoXOnPaste;
 long CGetSetOptions::m_bDescTextSize;
 BOOL CGetSetOptions::m_bDescShowLeadingWhiteSpace;
-BOOL CGetSetOptions::m_bAllwaysShowDescription;
 long CGetSetOptions::m_bDoubleClickingOnCaptionDoes;
 BOOL CGetSetOptions::m_bPrompForNewGroupName;
 BOOL CGetSetOptions::m_bWinVTakeover;
@@ -255,7 +254,6 @@ void CGetSetOptions::LoadSettings()
 	m_bHideDittoXOnPaste = GetHideDittoXOnPaste();
 	m_bDescTextSize = GetDescTextSize();
 	m_bDescShowLeadingWhiteSpace = GetDescShowLeadingWhiteSpace();
-	m_bAllwaysShowDescription = GetAllwaysShowDescription();
 	m_bDoubleClickingOnCaptionDoes = GetDoubleClickingOnCaptionDoes();
 	m_bPrompForNewGroupName = GetPrompForNewGroupName();
 	m_bWinVTakeover = GetWinVTakeover();
@@ -380,7 +378,6 @@ void CGetSetOptions::ConverSettingsToIni()
 	SetAutoHide(GetAutoHide());
 	SetDescTextSize(GetDescTextSize());
 	SetDescShowLeadingWhiteSpace(GetDescShowLeadingWhiteSpace());
-	SetAllwaysShowDescription(GetAllwaysShowDescription());
 	SetDoubleClickingOnCaptionDoes(GetDoubleClickingOnCaptionDoes());
 	SetPrompForNewGroupName(GetPrompForNewGroupName());
 
@@ -1288,24 +1285,18 @@ BOOL CGetSetOptions::GetDescShowLeadingWhiteSpace()
 	return GetProfileLong("DescShowLeadingWhiteSpace", FALSE); 
 }
 
-void CGetSetOptions::SetAllwaysShowDescription(long bShow)	
-{	
-	SetProfileLong("AllwaysShowDescription", bShow); 
-	m_bAllwaysShowDescription = bShow; 
+void CGetSetOptions::SetDoubleClickingOnCaptionDoes(long lOption)
+{
+	SetProfileLong("DoubleClickingOnCaptionDoes", lOption);
+	m_bDoubleClickingOnCaptionDoes = lOption;
 }
-BOOL CGetSetOptions::GetAllwaysShowDescription()			
-{	
-	return GetProfileLong("AllwaysShowDescription", FALSE); 
-}
-
-void CGetSetOptions::SetDoubleClickingOnCaptionDoes(long lOption)	
-{	
-	SetProfileLong("DoubleClickingOnCaptionDoes", lOption); 
-	m_bDoubleClickingOnCaptionDoes = lOption; 
-}
-long CGetSetOptions::GetDoubleClickingOnCaptionDoes()				
-{	
-	return GetProfileLong("DoubleClickingOnCaptionDoes", TOGGLES_ALLWAYS_ON_TOP); 
+long CGetSetOptions::GetDoubleClickingOnCaptionDoes()
+{
+	long lOption = GetProfileLong("DoubleClickingOnCaptionDoes", TOGGLES_ALLWAYS_ON_TOP);
+	// Deprecated value TOGGLES_ALLWAYS_SHOW_DESCRIPTION (2) mapped to TOGGLES_ALLWAYS_ON_TOP (1)
+	if (lOption == TOGGLES_ALLWAYS_SHOW_DESCRIPTION)
+		lOption = TOGGLES_ALLWAYS_ON_TOP;
+	return lOption;
 }
 
 void CGetSetOptions::SetPrompForNewGroupName(BOOL bOption)	
@@ -1886,12 +1877,12 @@ void CGetSetOptions::SetAutoMaxDelay(long lDelay)
 
 void CGetSetOptions::SetTheme(CString csTheme)
 {
-	SetProfileString(_T("Theme2"), csTheme);
+	SetProfileString(_T("Theme2"), _T(""));
 }
 
 CString CGetSetOptions::GetTheme()
 {
-	return GetProfileString(_T("Theme2"), "");
+	return _T("");
 }
 
 long CGetSetOptions::GetKeyStateWaitTimerCount()
@@ -2133,15 +2124,6 @@ void CGetSetOptions::SetPasteAsAdmin(BOOL val)
 BOOL CGetSetOptions::GetPasteAsAdmin()
 {
 	return GetProfileLong(_T("PasteAsAdmin"), 1);
-}
-
-void CGetSetOptions::SetRememberDescPos(BOOL val)
-{
-	SetProfileLong(_T("RememberDescPos"), val);
-}
-BOOL CGetSetOptions::GetRememberDescPos()
-{
-	return GetProfileLong(_T("RememberDescPos"), FALSE);
 }
 
 void CGetSetOptions::SetSizeDescWindowToContent(BOOL val)
@@ -2461,16 +2443,6 @@ BOOL CGetSetOptions::GetMouseClickHidesDescription()
 void CGetSetOptions::SetMouseClickHidesDescription(int val)
 {
 	SetProfileLong(_T("MouseClickHidesDescription"), val);
-}
-
-BOOL CGetSetOptions::GetWrapDescriptionText()
-{
-	return GetProfileLong(_T("WrapDescriptionText"), FALSE);
-}
-
-void CGetSetOptions::SetWrapDescriptionText(int val)
-{
-	SetProfileLong(_T("WrapDescriptionText"), val);
 }
 
 int CGetSetOptions::GetDelayRenderLockout()

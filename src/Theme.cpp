@@ -80,8 +80,12 @@ bool CTheme::Load(CString csTheme, bool bHeaderOnly, bool bCheckLastWriteTime)
 
 		if (DarkAppWindows10Setting())
 		{
-			csTheme = _T("DarkerDittoX");
-			Log(_T("Loading theme based on windows setting of dark mode for apps"));			
+			csTheme = _T("Win11 Clipboard Dark");
+			Log(_T("Loading theme based on windows setting of dark mode for apps"));
+		}
+		else
+		{
+			csTheme = _T("Win11 Clipboard Light");
 		}
 	}
 

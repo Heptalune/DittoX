@@ -162,7 +162,6 @@ public:
 	CF_NoDibTypeMap m_cf_NO_rtfCache;
     CCriticalSection m_CritSection;
     CAccels m_actions;
-	CAccels m_toolTipActions;
 	CAccels m_modifierKeyActions;
 	bool m_showScrollBars;
 	CModernScrollBar m_modernScrollBar;       // Vertical scrollbar
@@ -223,9 +222,6 @@ public:
 
 	bool DoAction(CAccel a);
 	bool DoAction(DWORD cmd);
-	bool DoActionShowDescription();
-	bool DoActionNextDescription(); 
-	bool DoActionPrevDescription();
 	bool DoActionShowMenu();
 	bool DoActionShowSystemMenu();
 	bool DoActionNewGroup();
@@ -240,7 +236,6 @@ public:
 	bool DoActionNewClip();
 	bool DoActionEditClip();
 	bool DoActionMoveSelectionDown();
-	bool DoActionToggleDescriptionWordWrap();
 	bool DoActionApplyLastSearch();
 	bool DoActionToggleSearchMethod();
 	bool DoActionPasteScript(CString scriptGuid);
@@ -371,10 +366,8 @@ protected:
     afx_msg void OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
     afx_msg void GetDispInfo(NMHDR *pNMHDR, LRESULT *pResult);
     afx_msg void OnFindItem(NMHDR *pNMHDR, LRESULT *pResult);
-    afx_msg void OnMenuQuickoptionsAllwaysshowdescription();
     afx_msg void OnMenuQuickoptionsDoubleclickingoncaptionTogglesalwaysontop();
     afx_msg void OnMenuQuickoptionsDoubleclickingoncaptionRollupwindow();
-    afx_msg void OnMenuQuickoptionsDoubleclickingoncaptionTogglesshowdescription();
     afx_msg void OnMenuQuickoptionsPromptfornewgroupnames();
     afx_msg void OnShowGroupsBottom();
     afx_msg void OnShowGroupsTop();
@@ -430,7 +423,6 @@ protected:
 	afx_msg void OnSystemButton();
     afx_msg LRESULT OnUpDown(WPARAM wParam, LPARAM lParam);
     afx_msg LRESULT OnItemDeleted(WPARAM wParam, LPARAM lParam);
-    LRESULT OnToolTipWndInactive(WPARAM wParam, LPARAM lParam);
     afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg void OnMenuExport();
     afx_msg void OnMenuImport();

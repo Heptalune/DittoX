@@ -59,8 +59,6 @@ protected:
 	bool m_applyingDelete;
 	bool m_cancelDelete;
 
-	CToolTipEx* m_pDescriptionWindow;
-
 
 	void InitListCtrlCols();
 	virtual BOOL OnInitDialog();
@@ -68,7 +66,6 @@ protected:
 	void SetDbSize();
 
 	afx_msg void OnClose();
-	void CloseDescriptionWindow();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnNcDestroy();
 	void LoadItems();
@@ -79,8 +76,6 @@ protected:
 	BOOL SetCaret(int nRow, BOOL bFocus = 1);
 	BOOL SetSelection(int nRow, BOOL bSelect = 1);
 	void SelectRow(int selectedRow);
-	void CreateAndShowDescriptionWindow();
-	void SetDescriptionWindowText(INT_PTR row);
 	void SaveClipDataItemToFile(CDeleteData item);
 
 public:

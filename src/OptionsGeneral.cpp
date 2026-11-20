@@ -474,63 +474,11 @@ HBRUSH COptionsGeneral::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 void COptionsGeneral::FillThemes()
 {
-	CString csFile = CGetSetOptions::GetPath(PATH_THEMES);
-	csFile += "*.xml";
-
-	CString csTheme = CGetSetOptions::GetTheme();
-	
 	m_cbTheme.Clear();
 
 	int windowsSettingIndex = m_cbTheme.AddString(theApp.m_Language.GetString("FollowWindowsTheme", "（跟随 Windows 亮/暗主题）"));
-		
-		//_T("(Follow windows light/dark themes)"));
 	m_cbTheme.SetItemData(windowsSettingIndex, 0);
-
-	CFileFind find;
-	BOOL bCont = find.FindFile(csFile);
-	bool bSetCurSel = false;
-
-	while (bCont)
-	{
-		bCont = find.FindNextFile();
-
-		CTheme theme;
-		if (theme.Load(find.GetFileTitle(), true, false))
-		{
-			if (theme.FileVersion() >= 2 && theme.FileVersion() < 100)
-			{
-				int nIndex = m_cbTheme.AddString(find.GetFileTitle());
-				m_cbTheme.SetItemData(nIndex, 1);
-
-				if (find.GetFileTitle() == csTheme)
-				{
-					m_cbTheme.SetCurSel(nIndex);
-					bSetCurSel = true;
-				}
-			}
-		}
-	}
-
-	int nIndex = m_cbTheme.AddString(DEFAULT_THEME);
-	m_cbTheme.SetItemData(nIndex, 1);
-	if (csTheme == DEFAULT_THEME)
-	{
-		m_cbTheme.SetCurSel(nIndex);
-		bSetCurSel = true;
-	}
-
-	if (bSetCurSel == false)
-	{
-		int count = m_cbTheme.GetCount();
-		for (int i = 0; i < count; i++)
-		{
-			if (m_cbTheme.GetItemData(i) == 0)
-			{
-				m_cbTheme.SetCurSel(i);
-				break;
-			}
-		}
-	}
+	m_cbTheme.SetCurSel(windowsSettingIndex);
 }
 
 void COptionsGeneral::OnBnClickedButtonTheme()

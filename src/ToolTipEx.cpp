@@ -26,7 +26,6 @@ CToolTipEx::CToolTipEx(): m_dwTextStyle(DT_EXPANDTABS | DT_EXTERNALLEADING |
                         m_pNotifyWnd(NULL), m_clipId(0), m_clipRow(-1)
 {
 	m_showPersistant = false;
-	m_pToolTipActions = NULL;
 	m_bMaxSetTimer = false;
 	m_lDelayMaxSeconds = 2;
 	m_showingText = false;
@@ -54,29 +53,14 @@ BEGIN_MESSAGE_MAP(CToolTipEx, CWnd)
 	ON_WM_NCMOUSEMOVE()
 	ON_WM_NCLBUTTONUP()
 	ON_WM_ERASEBKGND()
-	ON_COMMAND(ID_FIRST_REMEMBERWINDOWPOSITION, &CToolTipEx::OnRememberwindowposition)
-	ON_COMMAND(ID_FIRST_SIZEWINDOWTOCONTENT, &CToolTipEx::OnSizewindowtocontent)
-	ON_COMMAND(ID_FIRST_SCALEIMAGESTOFITWINDOW, &CToolTipEx::OnScaleimagestofitwindow)
-	ON_COMMAND(2, OnOptions)
-	ON_WM_RBUTTONDOWN()
 	ON_WM_SETFOCUS()
-	ON_COMMAND(ID_FIRST_HIDEDESCRIPTIONWINDOWONM, &CToolTipEx::OnFirstHidedescriptionwindowonm)
-	ON_COMMAND(ID_FIRST_WRAPTEXT, &CToolTipEx::OnFirstWraptext)
 	ON_WM_WINDOWPOSCHANGING()
-	ON_COMMAND(ID_FIRST_ALWAYSONTOP, &CToolTipEx::OnFirstAlwaysontop)
 	ON_NOTIFY(EN_MSGFILTER, 1, &CToolTipEx::OnEnMsgfilterRichedit21)
 	ON_MESSAGE(WM_DPICHANGED, OnDpiChanged)
 	ON_WM_MOVING()
 	ON_WM_ENTERSIZEMOVE()
 	ON_WM_HSCROLL()
 	ON_MESSAGE(WM_REFRESH_FOOTER, OnRefreshFooter)
-	ON_COMMAND(ID_FIRST_VIEWTEXT, &CToolTipEx::OnFirstViewtext)
-	ON_COMMAND(ID_FIRST_VIEWRTF, &CToolTipEx::OnFirstViewrtf)
-	ON_COMMAND(ID_FIRST_VIEWHTML, &CToolTipEx::OnFirstViewhtml)
-	ON_COMMAND(ID_FIRST_VIEWASIMAGE, &CToolTipEx::OnFirstViewImage)
-	ON_UPDATE_COMMAND_UI(ID_FIRST_VIEWTEXT, &CToolTipEx::OnUpdateFirstViewtext)
-	ON_UPDATE_COMMAND_UI(ID_FIRST_VIEWRTF, &CToolTipEx::OnUpdateFirstViewrtf)
-	ON_UPDATE_COMMAND_UI(ID_FIRST_VIEWHTML, &CToolTipEx::OnUpdateFirstViewhtml)
 END_MESSAGE_MAP()
 
 
@@ -122,13 +106,6 @@ BOOL CToolTipEx::Create(CWnd *pParentWnd)
 
 	m_RichEdit.SetEventMask(m_RichEdit.GetEventMask() | ENM_SELCHANGE | ENM_LINK | ENM_MOUSEEVENTS | ENM_SCROLLEVENTS);
 	m_RichEdit.SetAutoURLDetect(TRUE);
-	
-	ApplyWordWrap();	   
-
-	m_optionsButton.Create(NULL, WS_CHILD | BS_OWNERDRAW | WS_TABSTOP, CRect(0, 0, 0, 0), this, 2);
-	m_optionsButton.LoadStdImageDPI(m_DittoXWindow.m_dpi.GetDPI(), IDB_COG_16_16, IDB_COG_20_20, IDB_COG_24_24, cog_28, IDB_COG_32_32, _T("PNG"));
-	m_optionsButton.SetToolTipText(theApp.m_Language.GetString(_T("DescriptionOptionsTooltip"), _T("Description Options")));
-	m_optionsButton.ShowWindow(SW_SHOW);
 
 	m_clipDataStatic.Create(_T("some text"), WS_CHILD | WS_VISIBLE | SS_SIMPLE, CRect(0, 0, 0, 0), this, 3);
 	m_folderPathStatic.Create(_T("some text"), WS_CHILD | WS_VISIBLE | SS_SIMPLE, CRect(0, 0, 0, 0), this, 4);
@@ -359,12 +336,6 @@ BOOL CToolTipEx::Hide()
 
 void CToolTipEx::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 {
-	// toggle ShowPersistent when we double click the caption
-	if (nHitTest == HTCAPTION)
-	{
-		OnFirstAlwaysontop();
-	}
-
 	CWnd::OnNcLButtonDblClk(nHitTest, point);
 }
 
@@ -418,23 +389,10 @@ BOOL CToolTipEx::PreTranslateMessage(MSG *pMsg)
                 break;
             }
 			break;
-		case WM_RBUTTONDOWN:
-			{
-				auto f = GetFocus();
-				if (f != NULL &&
-					(m_RichEdit.m_hWnd == f->m_hWnd ||
-					m_imageViewer.m_hWnd == f->m_hWnd))
-				{
-					OnOptions();
-					return TRUE;
-				}
-			}
-			break;
 		case WM_LBUTTONUP:
 			auto f = GetFocus();
 			if (f != NULL &&
-				m_RichEdit.m_hWnd != f->m_hWnd &&
-				m_optionsButton.m_hWnd != f->m_hWnd)
+				m_RichEdit.m_hWnd != f->m_hWnd)
 			{
 				auto p = GetParent();
 				if (p != NULL)
@@ -444,27 +402,6 @@ BOOL CToolTipEx::PreTranslateMessage(MSG *pMsg)
 			}
 			break;
     }
-
-	if (m_pToolTipActions != NULL)
-	{
-		CAccel a;
-		if (m_pToolTipActions->OnMsg(pMsg, a))
-		{
-			switch (a.Cmd)
-			{
-			case ActionEnums::CLOSEWINDOW:
-				/*if (this->m_showPersistant &&
-					m_DittoXWindow.m_bMinimized == false)
-				{
-					m_DittoXWindow.MinMaxWindow(this, FORCE_MIN);
-					theApp.m_activeWnd.ReleaseFocus();
-
-					return TRUE;
-				}*/
-				break;
-			}
-		}
-	}
 
     return CWnd::PreTranslateMessage(pMsg);
 }
@@ -538,14 +475,6 @@ BOOL CToolTipEx::OnMsg(MSG *pMsg)
 				else if (vk == VK_DELETE)
 				{
 					return FALSE;
-				}
-
-				if (m_pToolTipActions != NULL)
-				{
-					if (m_pToolTipActions->ContainsKey((int)vk))
-					{
-						return FALSE;
-					}
 				}
 
 				if (m_showPersistant == false)
@@ -768,13 +697,11 @@ void CToolTipEx::MoveControls()
 	GetClientRect(cr);
 
 	int bottom = m_DittoXWindow.m_dpi.Scale(22);
-	int optionsExtra = 0;
 
 	if (m_folderPath != _T(""))
 	{
 		bottom += m_DittoXWindow.m_dpi.Scale(17);
-		optionsExtra += m_DittoXWindow.m_dpi.Scale(10);
-		m_folderPathStatic.ShowWindow(SW_SHOW);			
+		m_folderPathStatic.ShowWindow(SW_SHOW);
 	}
 	else
 	{
@@ -789,8 +716,6 @@ void CToolTipEx::MoveControls()
 	{
 		m_browser.MoveWindow(cr);
 	}
-
-	m_optionsButton.MoveWindow(cr.left, cr.bottom + m_DittoXWindow.m_dpi.Scale(3) + optionsExtra, m_DittoXWindow.m_dpi.Scale(17), m_DittoXWindow.m_dpi.Scale(17));
 
 	m_clipDataStatic.MoveWindow(cr.left + m_DittoXWindow.m_dpi.Scale(19), cr.bottom + m_DittoXWindow.m_dpi.Scale(4), cr.Width() - cr.left + m_DittoXWindow.m_dpi.Scale(19), m_DittoXWindow.m_dpi.Scale(20));
 
@@ -1165,133 +1090,6 @@ void CToolTipEx::OnNcMouseMove(UINT nHitTest, CPoint point)
 	CWnd::OnNcMouseMove(nHitTest, point);
 }
 
-void CToolTipEx::OnOptions()
-{
-	POINT pp;
-	CMenu cmPopUp;
-	CMenu *cmSubMenu = NULL;
-
-	GetCursorPos(&pp);
-	if(cmPopUp.LoadMenu(IDR_DESC_OPTIONS_MENU) != 0)
-	{
-		cmSubMenu = cmPopUp.GetSubMenu(0);
-		if(!cmSubMenu)
-		{
-			return ;
-		}
-
-		GetCursorPos(&pp);
-
-		theApp.m_Language.UpdateRightClickMenu(cmSubMenu);
-
-		if(CGetSetOptions::GetRememberDescPos())
-			cmSubMenu->CheckMenuItem(ID_FIRST_REMEMBERWINDOWPOSITION, MF_CHECKED);
-
-		if(CGetSetOptions::GetSizeDescWindowToContent())
-			cmSubMenu->CheckMenuItem(ID_FIRST_SIZEWINDOWTOCONTENT, MF_CHECKED);
-
-		if(CGetSetOptions::GetScaleImagesToDescWindow())
-			cmSubMenu->CheckMenuItem(ID_FIRST_SCALEIMAGESTOFITWINDOW, MF_CHECKED);
-
-		if (CGetSetOptions::GetMouseClickHidesDescription())
-			cmSubMenu->CheckMenuItem(ID_FIRST_HIDEDESCRIPTIONWINDOWONM, MF_CHECKED);		
-
-		if (m_showPersistant)
-			cmSubMenu->CheckMenuItem(ID_FIRST_ALWAYSONTOP, MF_CHECKED);
-
-		if (m_showingText)
-		{
-			cmSubMenu->CheckMenuItem(ID_FIRST_VIEWTEXT, MF_CHECKED);
-		}
-		if (m_csText.GetLength() <= 0)
-		{
-			cmSubMenu->EnableMenuItem(ID_FIRST_VIEWTEXT, MF_DISABLED);
-		}
-
-		if (m_showingRTF)
-		{
-			cmSubMenu->CheckMenuItem(ID_FIRST_VIEWRTF, MF_CHECKED);
-		}
-		if (m_csRTF.GetLength() <= 0)
-		{
-			cmSubMenu->EnableMenuItem(ID_FIRST_VIEWRTF, MF_DISABLED);
-		}
-
-		if (m_showingHTML)
-		{
-			cmSubMenu->CheckMenuItem(ID_FIRST_VIEWHTML, MF_CHECKED);
-		}
-		if (m_html.GetLength() <= 0)
-		{
-			cmSubMenu->EnableMenuItem(ID_FIRST_VIEWHTML, MF_DISABLED);
-		}
-
-		if (m_showingImage)
-		{
-			cmSubMenu->CheckMenuItem(ID_FIRST_VIEWASIMAGE, MF_CHECKED);
-		}
-		if (m_imageViewer.m_pGdiplusBitmap == NULL)
-		{
-			cmSubMenu->EnableMenuItem(ID_FIRST_VIEWASIMAGE, MF_DISABLED);
-		}
-
-		UpdateMenuShortCut(cmSubMenu, ID_FIRST_WRAPTEXT, ActionEnums::TOGGLE_DESCRIPTION_WORD_WRAP);
-		UpdateMenuShortCut(cmSubMenu, ID_FIRST_ALWAYSONTOP, ActionEnums::TOGGLESHOWPERSISTANT);
-
-		if (CGetSetOptions::GetWrapDescriptionText())
-			cmSubMenu->CheckMenuItem(ID_FIRST_WRAPTEXT, MF_CHECKED);
-		
-		cmSubMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RIGHTBUTTON, pp.x, pp.y, this, NULL);
-	}
-}
-
-void CToolTipEx::UpdateMenuShortCut(CMenu *subMenu, int id, DWORD action)
-{
-	if (m_pToolTipActions != NULL)
-	{
-		CString cs;
-		subMenu->GetMenuString(id, cs, MF_BYCOMMAND);
-		CString shortcutText = m_pToolTipActions->GetCmdKeyText(action);
-		if (shortcutText != _T("") &&
-			cs.Find("\t" + shortcutText) < 0)
-		{
-			cs += "\t";
-			cs += shortcutText;
-			subMenu->ModifyMenu(id, MF_BYCOMMAND, id, cs);
-		}
-	}
-}
-
-void CToolTipEx::OnRememberwindowposition()
-{
-	CGetSetOptions::SetRememberDescPos(!CGetSetOptions::GetRememberDescPos());
-}
-
-void CToolTipEx::OnSizewindowtocontent()
-{
-	CGetSetOptions::SetSizeDescWindowToContent(!CGetSetOptions::GetSizeDescWindowToContent());
-
-	CRect rect;
-	this->GetWindowRect(&rect);
-
-	Show(rect.TopLeft());
-}
-
-void CToolTipEx::OnScaleimagestofitwindow()
-{
-	CGetSetOptions::SetScaleImagesToDescWindow(!CGetSetOptions::GetScaleImagesToDescWindow());
-	m_imageViewer.UpdateBitmapSize(true);
-	Invalidate();
-}
-
-void CToolTipEx::OnRButtonDown(UINT nFlags, CPoint point)
-{
-	OnOptions();
-
-	CWnd::OnRButtonDown(nFlags, point);
-}
-
-
 void CToolTipEx::OnSetFocus(CWnd* pOldWnd)
 {
 	CWnd::OnSetFocus(pOldWnd);
@@ -1320,42 +1118,7 @@ void CToolTipEx::OnPaint()
 	dc.SelectObject(pOldBrush);
 }
 
-void CToolTipEx::OnFirstHidedescriptionwindowonm()
-{
-	CGetSetOptions::SetMouseClickHidesDescription(!CGetSetOptions::GetMouseClickHidesDescription());
-}
-
-bool CToolTipEx::ToggleWordWrap()
-{
-	bool didWordWrap = false;
-	if (m_RichEdit.IsWindowVisible())
-	{
-		OnFirstWraptext();
-		didWordWrap = true;
-	}
-
-	return didWordWrap;
-}
-
-void CToolTipEx::OnFirstWraptext()
-{
-	CGetSetOptions::SetWrapDescriptionText(!CGetSetOptions::GetWrapDescriptionText());	
-	ApplyWordWrap();
-}
-
-void CToolTipEx::ApplyWordWrap()
-{
-	if (CGetSetOptions::GetWrapDescriptionText())
-	{
-		m_RichEdit.SetTargetDevice(NULL, 0);
-	}
-	else
-	{
-		m_RichEdit.SetTargetDevice(NULL, 1);
-	}
-}
-
-void CToolTipEx::HideWindowInXMilliSeconds(long lms) 
+void CToolTipEx::HideWindowInXMilliSeconds(long lms)
 { 
 	SetTimer(HIDE_WINDOW_TIMER, lms, NULL); 
 }
@@ -1365,25 +1128,6 @@ void CToolTipEx::OnWindowPosChanging(WINDOWPOS* lpwndpos)
 	CWnd::OnWindowPosChanging(lpwndpos);
 
 	//m_DittoXWindow.SnapToEdge(this, lpwndpos);
-}
-
-
-void CToolTipEx::OnFirstAlwaysontop()
-{
-	m_showPersistant = !m_showPersistant;
-	if (m_showPersistant)
-	{
-		m_DittoXWindow.m_customWindowTitle = _T("[Always on top]");
-		m_DittoXWindow.m_useCustomWindowTitle = true;
-		::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_SHOWWINDOW | SWP_NOACTIVATE);
-	}
-	else
-	{
-		m_DittoXWindow.m_customWindowTitle = _T("");
-		m_DittoXWindow.m_useCustomWindowTitle = true;
-	}
-
-	::SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0, SWP_DRAWFRAME | SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);	
 }
 
 BOOL CToolTipEx::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
@@ -1481,9 +1225,6 @@ LRESULT CToolTipEx::OnDpiChanged(WPARAM wParam, LPARAM lParam)
 
 	log(StrF(_T("CQPasteWnd::OnDpiChanged dpi: %d width: %d, height: %d"), dpi, (prcNewWindow->right - prcNewWindow->left), (prcNewWindow->bottom - prcNewWindow->top)));
 
-	m_optionsButton.Reset();
-	m_optionsButton.LoadStdImageDPI(m_DittoXWindow.m_dpi.GetDPI(), IDB_COG_16_16, IDB_COG_20_20, IDB_COG_24_24, cog_28, IDB_COG_32_32, _T("PNG"));
-
 	m_clipDataFont.DeleteObject();
 	m_clipDataFont.CreateFont(-m_DittoXWindow.m_dpi.Scale(8), 0, 0, 0, 400, 0, 0, 0, DEFAULT_CHARSET, 3, 2, 1, 34, _T("Segoe UI"));
 	
@@ -1550,116 +1291,4 @@ LRESULT CToolTipEx::OnRefreshFooter(WPARAM wParam, LPARAM lParam)
 	this->Invalidate();
 
 	return TRUE;
-}
-
-void CToolTipEx::OnFirstViewtext()
-{
-	if (::IsWindow(m_browser.m_hWnd))
-	{
-		m_browser.ShowWindow(SW_HIDE);
-	}
-	m_imageViewer.ShowWindow(SW_HIDE);
-
-	m_RichEdit.SetText(m_csText);
-
-	m_RichEdit.SetSel(0, 0);
-	HighlightSearchText();
-
-	m_RichEdit.ShowWindow(SW_SHOW);
-
-	this->Invalidate();
-	this->UpdateWindow();
-
-	m_showingText = true;
-	m_showingRTF = false;
-	m_showingHTML = false;
-	m_showingImage = false;
-}
-
-void CToolTipEx::OnFirstViewrtf()
-{
-	if (::IsWindow(m_browser.m_hWnd))
-	{
-		m_browser.ShowWindow(SW_HIDE);
-	}
-	m_imageViewer.ShowWindow(SW_HIDE);
-
-	m_RichEdit.SetRTF(m_csRTF);
-
-	m_RichEdit.SetSel(0, 0);
-	HighlightSearchText();
-
-	m_RichEdit.ShowWindow(SW_SHOW);
-
-	this->Invalidate();
-	this->UpdateWindow();
-
-	m_showingText = false;
-	m_showingRTF = true;
-	m_showingHTML = false;
-	m_showingImage = false;
-}
-
-
-void CToolTipEx::OnFirstViewhtml()
-{
-	m_imageViewer.ShowWindow(SW_HIDE);
-	m_RichEdit.ShowWindow(SW_HIDE);
-
-	if (::IsWindow(m_browser.m_hWnd))
-	{
-		m_browser.ShowWindow(SW_SHOW);
-	}
-
-	m_showingText = false;
-	m_showingRTF = false;
-	m_showingHTML = true;
-	m_showingImage = false;
-}
-
-void CToolTipEx::OnFirstViewImage()
-{
-	m_RichEdit.ShowWindow(SW_HIDE);
-	if (::IsWindow(m_browser.m_hWnd))
-	{
-		m_browser.ShowWindow(SW_HIDE);
-	}
-
-	if (m_imageViewer.m_pGdiplusBitmap)
-	{
-		m_imageViewer.UpdateBitmapSize(true);
-		m_imageViewer.ShowWindow(SW_SHOW);
-	}
-
-	m_showingText = false;
-	m_showingRTF = false;
-	m_showingHTML = false;
-	m_showingImage = true;
-}
-
-
-void CToolTipEx::OnUpdateFirstViewtext(CCmdUI* pCmdUI)
-{
-	if (m_csText.IsEmpty())
-	{
-		pCmdUI->Enable(0);
-	}
-}
-
-
-void CToolTipEx::OnUpdateFirstViewrtf(CCmdUI* pCmdUI)
-{
-	if (m_csRTF.IsEmpty())
-	{
-		pCmdUI->Enable(0);
-	}
-}
-
-
-void CToolTipEx::OnUpdateFirstViewhtml(CCmdUI* pCmdUI)
-{
-	if (m_html.IsEmpty())
-	{
-		pCmdUI->Enable(0);
-	}
 }

@@ -1,0 +1,57 @@
+# Build output
+Release64/
+Debug/
+x64/
+*/Release64/
+*/x64/
+*/Debug/
+[Dd]ebug/
+[Rr]elease/
+
+# Visual Studio cache & user files
+.vs/
+ipch/
+*.suo
+*.user
+*.aps
+*.plg
+*.ncb
+*.cachefile
+*.log
+*.tlog
+*.lastbuildstate
+
+# Build intermediates & binaries
+*.obj
+*.pdb
+*.ilk
+*.idb
+*.pch
+*.res
+*.tlh
+*.tli
+*.iobj
+*.ipdb
+*.exe
+*.dll
+*.lib
+*.exp
+*.map
+*.manifest
+
+# Backup files
+*.bak
+*.bak2
+*.gbk
+*.v030bak
+*.v031bak
+
+# NuGet packages (restore on build)
+packages/
+
+# Setup output
+DittoXSetup/Output/
+
+# Local signing certificates / private keys (never commit)
+*.pfx
+DittoXSetup/appx/Cert*.zip

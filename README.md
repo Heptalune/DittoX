@@ -2,7 +2,7 @@
 
 > 基于 [sabrogden/Ditto](https://github.com/sabrogden/Ditto) 源码改出来的自用复刻版 —— Windows 上的剪贴板管理器。
 
-**当前版本：0.3.0**
+**当前版本：0.4.0**
 
 ---
 
@@ -53,13 +53,16 @@ Windows 10/11 自带一个 Win+V 剪贴板历史面板，功能很弱。DittoX �
 | 最后十个复制项目的全局热键 | 键盘快捷键页的十行热键输入框、位置标签、三个配套开关、全局热键注册与响应、列表编号绘制 |
 | 粘贴前 N 项 | 窗口内 Ctrl+1~0（`PASTE_POSITION_1..10` 及其 `_PLAIN_TEXT` 变体） |
 | 比较 | `src/ClipCompare.cpp/.h`、快捷粘贴菜单的「比较」子菜单、`PATH_CLIP_DIFF` 临时目录分支、`高级` 页里的差异程序路径与 UTF-8 两行设置 |
-| 查看完整说明 | 快捷粘贴右键菜单里点了没反应的那一项 |
+| 查看完整说明 | 说明浮窗、右键选项菜单（`IDR_DESC_OPTIONS_MENU`）、`DeleteClipData` 全部相关代码、`Options` 相关设置、`resource.h` 13 个废弃 ID、6 份语言文件 72 条废弃语言键（`CToolTipEx` 核心显示 API 保留，用于命令行错误弹窗） |
 | 模板对话框 | 从未被引用的 `IDD_ABOUTBOX`（含 `DESIGNINFO` 与资源定义） |
 
 > **枚举兼容**：`PASTE_POSITION_*`、`COMPARE_*`、`SEND_TO_FRIEND_*` 这些枚举的数值会写进注册表里的快捷键配置。为了不破坏老用户的快捷键，**枚举定义保留并标注 `// Deprecated`，只删掉使用处**，避免老配置整体错位。
 
 ### 3. 界面与其它调整
 
+- **Win11 风格主题**（v0.4.0）：全新浅色 / 深色两套主题，仿 Windows 11 原生剪贴板配色，自动跟随系统深浅色；主弹窗列表改为圆角卡片样式；旧主题已全部移除；
+- **支持类型页重做**（v0.4.0）：编码列表改为分类平铺复选框（文本 / 图片 / 文件与表格 / 富文本与网页 / 音频 / 预览），全部格式显示中文名，新增 JPG / JPEG / RTF 无对象 / RTF 对象等格式，移除「添加 / 删除」按钮；
+- **关于页加上游致谢**（v0.4.0）：新增上游项目 sabrogden/Ditto 的介绍与链接；
 - **键盘快捷键页**：删掉十项热键区块后对话框高度收紧（330 → 165），剩余控件重新排布；
 - **关于页重做**：去掉「发邮件」链接，主页文字与超链接统一指向 <https://github.com/Heptalune/DittoX>；页面内容（版本、SQLite 版本、程序路径、数据库路径、开发、作者、加载项）全部走语言文件，不再硬编码英文；
 - **安装器**：里面的"帮助""更新说明"链接同样改指向本项目仓库；
@@ -73,6 +76,26 @@ Windows 10/11 自带一个 Win+V 剪贴板历史面板，功能很弱。DittoX �
 
 ## 更新日志
 
+### v0.4.0（2026-11-20）
+
+**界面**
+
+- 新增 Win11 风格主题：`Win11 Clipboard Light` / `Win11 Clipboard Dark`，仿 Windows 11 原生剪贴板配色（浅灰背景、白色卡片、蓝色选中）；默认主题自动跟随系统深浅色设置，系统切换时弹窗实时换肤（复用既有 `ImmersiveColorSet` 监听）
+- 移除全部 12 套旧主题（Classic、DarkerDittoX、MonoDark、Monolight、Nord、Selenized×7、Terminal）；`GetTheme`/`SetTheme` 锁定为跟随系统，设置页主题下拉只留「跟随 Windows 亮/暗主题」，老配置里的旧主题名自动失效
+- 主弹窗历史列表改为圆角卡片绘制（`CListCtrl` 自绘项用 `CreateRoundRectRgn` 内缩填充），行内边距加大（`ROW_BOTTOM_BORDER` 4→8、`ROW_LEFT_BORDER` 3→8）
+- 设置 → 支持的类型整页重做：原编码列表改为 6 组分类平铺复选框（文本 / 图片 / 文件与表格 / 富文本与网页 / 音频与其他 / 预览与其他），28 个格式全部显示「中文名 + 括号编码」；补上 `CF_RTFNOOBJS`、`CF_RETEXTOBJ`、`CF_DSPMETAFILEPICT`、`CF_DSPENHMETAFILE` 等此前没列出的格式；移除「添加 / 删除」按钮（勾选即启用，`ON_CONTROL_RANGE` 统一处理）；常用格式（文本、DIB、位图、TIFF、RTF、HTML、PNG、JPG、JPEG）默认勾选
+- 新增 JPG / JPEG 格式支持（格式名 + 勾选级：可捕获含该格式的剪贴板内容；缩略图渲染仍走 PNG 分支）
+- 关于页新增「上游项目」介绍与可点击链接，指向 sabrogden/Ditto；简 / 繁 / 英三份语言文件同步新增 `About_UpstreamTitle`、`About_UpstreamDesc`、`About_UpstreamLink`
+
+**性能**
+
+- SQLite 页缓存从默认 2MB 降为 512KB（`OpenDatabase` 里 `PRAGMA cache_size=-512`），后台常驻内存约省 1.5MB
+- 文件监听通知缓冲从 160KB（`FILE_NOTIFY_INFORMATION[10000]`）降为 4KB（`BYTE[4096]`）
+
+**版本**
+
+- RC 的 `FILEVERSION` / `PRODUCTVERSION` / `FileVersion` / `ProductVersion` 全部改为 `0.4.0.0`
+
 ### v0.3.0（2026-11-11）
 
 **删除**
@@ -81,7 +104,7 @@ Windows 10/11 自带一个 Win+V 剪贴板历史面板，功能很弱。DittoX �
 - 「粘贴前 N 项」：`ActionEnums` 里 `PASTE_POSITION_1..10` 及其 `_PLAIN_TEXT` 变体的使用处（枚举定义保留并标注 `// Deprecated`）
 - 「比较」功能：`src/ClipCompare.cpp/.h` 及工程条目、快捷粘贴菜单的「比较」子菜单与三个菜单 ID、`QPasteWnd` 的消息映射与三个 `DoAction` 分支、`PATH_CLIP_DIFF` 临时目录分支、`SetDiffApp/GetDiffApp`、`SetPreferUtf8ForCompare/GetPreferUtf8ForCompare` 以及 `高级` 页里的差异程序路径与 UTF-8 两行设置
 - 快捷粘贴右键菜单里残留的「发送到」好友菜单项（代码上一轮已删，菜单项一直留在资源里）
-- 快捷粘贴右键菜单的「查看完整说明」及其消息映射与处理函数
+- 「查看完整说明」功能完整删除：删除剪贴项右键菜单的「查看完整说明」项、说明浮窗（`CToolTipEx` 作为剪贴项内容弹窗的用法）、说明窗口右键选项菜单（`IDR_DESC_OPTIONS_MENU`）、`DeleteClipData` 中创建/显示/更新说明窗口的全部代码、`Options` 里的「始终显示说明」「记住窗口位置」「自动换行」设置、`resource.h` 中 13 个废弃 ID、6 份语言文件里 72 条废弃语言键；`CToolTipEx` 核心显示 API 保留（用于命令行错误弹窗）
 - 从未使用的模板对话框 `IDD_ABOUTBOX`
 
 **调整**

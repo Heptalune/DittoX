@@ -3,10 +3,8 @@
 #include "RichEditCtrlEx.h"
 #include "WndEx.h"
 #include "DittoXWindow.h"
-#include "GdipButton.h"
 #include "ImageViewer.h"
 #include "GroupStatic.h"
-#include "Accels.h"
 #include "SnapWindow.h"
 #include "SimpleBrowser.h"
 
@@ -45,13 +43,8 @@ public:
 	void SetFolderPath(CString path) { m_folderPath = path; }
 
 	bool GetShowPersistant() { return m_showPersistant; }
-	void ToggleShowPersistant() { OnFirstAlwaysontop(); }
-	bool ToggleWordWrap();
-	void SetTooltipActions(CAccels *pToolTipActions) { m_pToolTipActions = pToolTipActions; }
 
 	void GetWindowRectEx(LPRECT lpRect);
-
-	void UpdateMenuShortCut(CMenu *subMenu, int id, DWORD action);
 
 	void DoSearch();
 	void MoveControls();
@@ -82,7 +75,6 @@ protected:
 	CRichEditCtrlEx m_RichEdit;
 	SimpleBrowser m_browser;
 	CWnd *m_pNotifyWnd;
-	CGdipButton m_optionsButton;
 	int m_clipId;
 	CString m_searchText;
 	CScrollBar m_vScroll;
@@ -97,7 +89,6 @@ protected:
 	bool m_saveWindowLockout;
 	int m_clipRow;
 	bool m_showPersistant;
-	CAccels *m_pToolTipActions;
 	bool m_bMaxSetTimer;
 	int m_lDelayMaxSeconds;
 	SnapWindow m_snap;
@@ -126,22 +117,14 @@ protected:
 	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point); 
 	afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS FAR* lpncsp); 
 	afx_msg void OnNcPaint();
-	afx_msg void OnOptions();
 	afx_msg void OnWindowPosChanging(WINDOWPOS* lpwndpos);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	afx_msg void OnRememberwindowposition();
-	afx_msg void OnSizewindowtocontent();
-	afx_msg void OnScaleimagestofitwindow();
-	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
-	afx_msg void OnPaint();	
-	afx_msg void OnFirstHidedescriptionwindowonm();
-	afx_msg void OnFirstWraptext();
+	afx_msg void OnPaint();
 	afx_msg void OnNcLButtonDblClk(UINT nHitTest, CPoint point);
-	afx_msg void OnFirstAlwaysontop();
 	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
 	void OnEnMsgfilterRichedit21(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
@@ -149,11 +132,4 @@ public:
 	afx_msg void OnEnterSizeMove();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg LRESULT OnRefreshFooter(WPARAM wParam, LPARAM lParam);
-	afx_msg void OnFirstViewtext();
-	afx_msg void OnFirstViewrtf();
-	afx_msg void OnFirstViewhtml();
-	afx_msg void OnFirstViewImage();
-	afx_msg void OnUpdateFirstViewtext(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateFirstViewrtf(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateFirstViewhtml(CCmdUI* pCmdUI);
 };

@@ -139,7 +139,7 @@ void CClipEditThread::OnEvent(int eventId, void* param)
 
 void CClipEditThread::OnFileChanged()
 {
-	FILE_NOTIFY_INFORMATION* pNotify = m_fileChangeBuffer;
+	FILE_NOTIFY_INFORMATION* pNotify = reinterpret_cast<FILE_NOTIFY_INFORMATION*>(m_fileChangeBuffer);
 	int loopCount = 0;
 	bool fileModified = false;
 	CString editClipFileName = _T("EditClip_");

@@ -22,7 +22,6 @@ public:
 // Dialog Data
 	//{{AFX_DATA(COptionsTypes)
 	enum { IDD = IDD_OPTIONS_TYPES };
-	CListBox	m_List;
 	//}}AFX_DATA
 
 
@@ -39,14 +38,11 @@ public:
 protected:
 	bool m_bSave;
 	CString m_csTitle;
-	BOOL TextAllReadyThere(const CString &cs);
-
 
 	// Generated message map functions
 	//{{AFX_MSG(COptionsTypes)
 	virtual BOOL OnInitDialog();
-	afx_msg void OnDelete();
-	afx_msg void OnAdd();
+	afx_msg void OnTypeCheckboxChanged(UINT nID);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

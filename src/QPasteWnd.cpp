@@ -125,10 +125,8 @@ BEGIN_MESSAGE_MAP(CQPasteWnd, CWndEx)
 	ON_NOTIFY(LVN_GETDISPINFO, ID_LIST_HEADER, GetDispInfo)
 	ON_NOTIFY(LVN_ODFINDITEM, ID_LIST_HEADER, OnFindItem)
 	ON_COMMAND(ID_QUICKOPTIONS_SHOWINDICATORACLIPHASBEENPASTED, &CQPasteWnd::OnQuickoptionsShowindicatoracliphasbeenpasted)
-	ON_COMMAND(ID_MENU_QUICKOPTIONS_ALLWAYSSHOWDESCRIPTION, OnMenuQuickoptionsAllwaysshowdescription)
 	ON_COMMAND(ID_MENU_QUICKOPTIONS_DOUBLECLICKINGONCAPTION_TOGGLESALWAYSONTOP, OnMenuQuickoptionsDoubleclickingoncaptionTogglesalwaysontop)
 	ON_COMMAND(ID_MENU_QUICKOPTIONS_DOUBLECLICKINGONCAPTION_ROLLUPWINDOW, OnMenuQuickoptionsDoubleclickingoncaptionRollupwindow)
-	ON_COMMAND(ID_MENU_QUICKOPTIONS_DOUBLECLICKINGONCAPTION_TOGGLESALWAYSSHOWDESCRIPTION, OnMenuQuickoptionsDoubleclickingoncaptionTogglesshowdescription)
 	ON_COMMAND(ID_MENU_QUICKOPTIONS_PROMPTFORNEWGROUPNAMES, OnMenuQuickoptionsPromptfornewgroupnames)
 	ON_BN_CLICKED(ID_SHOW_GROUPS_BOTTOM, OnShowGroupsBottom)
 	ON_BN_CLICKED(ID_SHOW_GROUPS_TOP, OnShowGroupsTop)
@@ -187,7 +185,6 @@ BEGIN_MESSAGE_MAP(CQPasteWnd, CWndEx)
 	ON_COMMAND(ID_BACK_BUTTON, OnBackButton)
 	ON_COMMAND(ID_SYSTEM_BUTTON, OnSystemButton)
 	ON_MESSAGE(CB_UPDOWN, OnUpDown)
-	ON_MESSAGE(NM_INACTIVE_TOOLTIPWND, OnToolTipWndInactive)
 	ON_MESSAGE(NM_SET_LIST_COUNT, OnSetListCount)
 	ON_MESSAGE(NM_REFRESH_ROW, OnRefeshRow)
 	ON_MESSAGE(NM_ITEM_DELETED, OnItemDeleted)
@@ -508,7 +505,6 @@ void CQPasteWnd::LoadShortcuts()
 	m_modifierKeyActions.AddAccel(ActionEnums::MODIFIER_ACTVE_MOVELAST, VK_END);
 
 	m_actions.RemoveAll();
-	m_toolTipActions.RemoveAll();
 
 	m_actions.AddAccel(ActionEnums::NEXTTABCONTROL, VK_TAB);
 	m_actions.AddAccel(ActionEnums::PREVTABCONTROL, ACCEL_MAKEKEY(VK_TAB, HOTKEYF_CONTROL));
@@ -535,36 +531,9 @@ void CQPasteWnd::LoadShortcuts()
 					int b = CGetSetOptions::GetActionShortCutB(action, i);
 					m_actions.AddAccel(action, a, b);
 
-					//always add a shift variation to show description F3 so it will search backwards in the text search
-					if (action == ActionEnums::SHOWDESCRIPTION)
-					{
-						int shift = HOTKEYF_SHIFT;
-						if ((HIBYTE(a) & HOTKEYF_SHIFT))
-						{
-							shift = 0;
-						}
-
-						m_actions.AddAccel(action, ACCEL_MAKEKEY(LOBYTE(a), shift), b);
-					}
-					else if (action == ActionEnums::APPLY_LAST_SEARCH)
+					if (action == ActionEnums::APPLY_LAST_SEARCH)
 					{
 						m_search.SetLastSearchAccel(CAccel(a, action, b));
-					}
-
-					if (ActionEnums::ToolTipAction(action))
-					{
-						m_toolTipActions.AddAccel(action, a, b);
-
-						if (action == ActionEnums::SHOWDESCRIPTION)
-						{
-							int shift = HOTKEYF_SHIFT;
-							if ((HIBYTE(a) & HOTKEYF_SHIFT))
-							{
-								shift = 0;
-							}
-
-							m_toolTipActions.AddAccel(action, ACCEL_MAKEKEY(LOBYTE(a), shift), b);
-						}
 					}
 				}
 			}
@@ -586,8 +555,6 @@ void CQPasteWnd::LoadShortcuts()
 
 	m_actions.AddAccel(ActionEnums::TOGGLEFILELOGGING, ACCEL_MAKEKEY('D', HOTKEYF_CONTROL), ACCEL_MAKEKEY('F', HOTKEYF_CONTROL));
 	m_actions.AddAccel(ActionEnums::TOGGLEOUTPUTDEBUGSTRING, ACCEL_MAKEKEY('D', HOTKEYF_CONTROL), ACCEL_MAKEKEY('O', HOTKEYF_CONTROL));
-
-	m_lstHeader.SetTooltipActions(&m_toolTipActions);
 }
 
 void CQPasteWnd::SetSearchImages()
@@ -772,7 +739,7 @@ void CQPasteWnd::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 {
 	CWndEx::OnActivate(nState, pWndOther, bMinimized);
 
-	if (m_bHideWnd == false || (m_lstHeader.GetToolTipHWnd() != NULL && m_lstHeader.GetToolTipHWnd() == pWndOther->GetSafeHwnd()))
+	if (m_bHideWnd == false)
 	{
 		return;
 	}
@@ -800,7 +767,6 @@ void CQPasteWnd::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
 			g_HotKeys.RegisterAll();
 		}
 
-		m_lstHeader.HidePopup(true);
 	}
 	else if (nState == WA_ACTIVE || nState == WA_CLICKACTIVE)
 	{
@@ -873,7 +839,6 @@ BOOL CQPasteWnd::HideQPasteWindow(bool releaseFocus, BOOL clearSearchData)
 
 	KillTimer(TIMER_FILL_CACHE);
 
-	m_lstHeader.HidePopup(true);
 
 	m_popupMsg.Hide();
 
@@ -1428,7 +1393,6 @@ BOOL CQPasteWnd::FillList(CString csSQLSearch)
 {
 	KillTimer(TIMER_DO_SEARCH);
 
-	m_lstHeader.HidePopup(true);
 
 	Log(StrF(_T("Start Fill List - %s"), csSQLSearch));
 
@@ -1863,18 +1827,10 @@ void CQPasteWnd::SetMenuChecks(CMenu* pMenu)
 		break;
 	}
 
-	if (CGetSetOptions::GetAllwaysShowDescription())
-	{
-		pMenu->CheckMenuItem(ID_MENU_QUICKOPTIONS_ALLWAYSSHOWDESCRIPTION, MF_CHECKED);
-	}
-
 	switch (CGetSetOptions::GetDoubleClickingOnCaptionDoes())
 	{
 	case TOGGLES_ALLWAYS_ON_TOP:
 		pMenu->CheckMenuItem(ID_MENU_QUICKOPTIONS_DOUBLECLICKINGONCAPTION_TOGGLESALWAYSONTOP, MF_CHECKED);
-		break;
-	case TOGGLES_ALLWAYS_SHOW_DESCRIPTION:
-		pMenu->CheckMenuItem(ID_MENU_QUICKOPTIONS_DOUBLECLICKINGONCAPTION_TOGGLESALWAYSSHOWDESCRIPTION, MF_CHECKED);
 		break;
 	case ROLLES_UP_WINDOW:
 		pMenu->CheckMenuItem(ID_MENU_QUICKOPTIONS_DOUBLECLICKINGONCAPTION_ROLLUPWINDOW, MF_CHECKED);
@@ -2161,12 +2117,6 @@ void CQPasteWnd::OnMenuNewGroupSelection()
 	this->DoAction(ActionEnums::NEWGROUPSELECTION);
 }
 
-void CQPasteWnd::OnMenuQuickoptionsAllwaysshowdescription()
-{
-	CGetSetOptions::SetAllwaysShowDescription(!CGetSetOptions::m_bAllwaysShowDescription);
-
-}
-
 void CQPasteWnd::OnMenuQuickoptionsDoubleclickingoncaptionTogglesalwaysontop()
 {
 	CGetSetOptions::SetDoubleClickingOnCaptionDoes(TOGGLES_ALLWAYS_ON_TOP);
@@ -2177,11 +2127,6 @@ void CQPasteWnd::OnMenuQuickoptionsDoubleclickingoncaptionRollupwindow()
 {
 	CGetSetOptions::SetDoubleClickingOnCaptionDoes(ROLLES_UP_WINDOW);
 
-}
-
-void CQPasteWnd::OnMenuQuickoptionsDoubleclickingoncaptionTogglesshowdescription()
-{
-	CGetSetOptions::SetDoubleClickingOnCaptionDoes(TOGGLES_ALLWAYS_SHOW_DESCRIPTION);
 }
 
 void CQPasteWnd::OnMenuQuickoptionsPromptfornewgroupnames()
@@ -2625,11 +2570,6 @@ bool CQPasteWnd::DeleteClips(CClipIDs& IDs, ARRAY& Indexs)
 	m_lstHeader.SetListPos(nFirstSel);
 	UpdateStatus();
 
-	if (m_lstHeader.IsToolTipWindowVisible())
-	{
-		m_lstHeader.ShowFullDescription(false, true);
-	}
-
 	return true;
 }
 
@@ -2863,15 +2803,6 @@ bool CQPasteWnd::DoAction(CAccel a)
 
 	switch (a.Cmd)
 	{
-	case ActionEnums::SHOWDESCRIPTION:
-		ret = DoActionShowDescription();
-		break;
-	case ActionEnums::NEXTDESCRIPTION:
-		ret = DoActionNextDescription();
-		break;
-	case ActionEnums::PREVDESCRIPTION:
-		ret = DoActionPrevDescription();
-		break;
 	case ActionEnums::SHOWMENU:
 		ret = DoActionShowMenu();
 		break;
@@ -3054,9 +2985,6 @@ bool CQPasteWnd::DoAction(CAccel a)
 		break;
 	case ActionEnums::MOVE_SELECTION_DOWN:
 		ret = DoActionMoveSelectionDown();
-		break;
-	case ActionEnums::TOGGLE_DESCRIPTION_WORD_WRAP:
-		ret = DoActionToggleDescriptionWordWrap();
 		break;
 	case ActionEnums::APPLY_LAST_SEARCH:
 		ret = DoActionApplyLastSearch();
@@ -3254,143 +3182,6 @@ bool CQPasteWnd::DoActionApplyLastSearch()
 	return m_search.ApplyLastSearch();
 }
 
-bool CQPasteWnd::DoActionToggleDescriptionWordWrap()
-{
-	if (m_lstHeader.IsToolTipWindowVisible() == FALSE)
-		return false;
-
-	bool ret = m_lstHeader.ToggleToolTipWordWrap();
-	return (ret == true);
-}
-
-bool CQPasteWnd::DoActionShowDescription()
-{
-	bool ret = false;
-
-	m_actions.m_handleRepeatKeys = true;
-
-	CString csText;
-	m_search.GetWindowText(csText);
-	if (csText != _T(""))
-	{
-		m_search.AddToSearchHistory();
-	}
-
-	if (m_lstHeader.IsToolTipWindowVisible() == false)
-	{
-		ret = m_lstHeader.ShowFullDescription(false, false);
-	}
-	else
-	{
-		if (csText != _T(""))
-		{
-			m_lstHeader.DoToolTipSearch();
-			ret = true;
-		}
-		else
-		{
-			m_lstHeader.HideToolTip();
-			ret = true;
-		}
-	}
-
-	return (ret == true);
-}
-
-bool CQPasteWnd::DoActionNextDescription()
-{
-	if (m_lstHeader.IsToolTipWindowVisible() == FALSE)
-		return false;
-
-	if (CGetSetOptions::m_bAllwaysShowDescription)
-		return false;
-
-	m_actions.m_handleRepeatKeys = true;
-
-	ARRAY Indexes;
-	m_lstHeader.GetSelectionIndexes(Indexes);
-
-	long caret = m_lstHeader.GetCaret();
-
-	if (Indexes.GetCount() > 1)
-	{
-		for (int i = 0; i < Indexes.GetCount(); i++)
-		{
-			int index = Indexes[i];
-			if (index == caret)
-			{
-				if (i < Indexes.GetCount() - 1)
-				{
-					caret = Indexes[i + 1];
-					break;
-				}
-				else
-				{
-					caret = Indexes[0];
-				}
-			}
-		}
-
-		m_lstHeader.SetCaret(caret);
-	}
-	else
-	{
-		caret++;
-		m_lstHeader.SetListPos(caret);
-	}
-
-	m_lstHeader.ShowFullDescription(false, true);
-
-	return true;
-}
-
-bool CQPasteWnd::DoActionPrevDescription()
-{
-	if (m_lstHeader.IsToolTipWindowVisible() == FALSE)
-		return false;
-
-	if (CGetSetOptions::m_bAllwaysShowDescription)
-		return false;
-
-	m_actions.m_handleRepeatKeys = true;
-
-	ARRAY Indexes;
-	m_lstHeader.GetSelectionIndexes(Indexes);
-
-	long caret = m_lstHeader.GetCaret();
-
-	if (Indexes.GetCount() > 1)
-	{
-		for (int i = ((int)Indexes.GetCount()) - 1; i >= 0; i--)
-		{
-			int index = Indexes[i];
-			if (index == caret)
-			{
-				if (i > 0)
-				{
-					caret = Indexes[i - 1];
-					break;
-				}
-				else
-				{
-					caret = Indexes[((int)Indexes.GetCount()) - 1];
-				}
-			}
-		}
-
-		m_lstHeader.SetCaret(caret);
-	}
-	else
-	{
-		caret--;
-		m_lstHeader.SetListPos(caret);
-	}
-
-	m_lstHeader.ShowFullDescription(false, true);
-
-	return true;
-}
-
 bool CQPasteWnd::DoActionShowMenu()
 {
 	ShowRightClickMenu();
@@ -3472,14 +3263,7 @@ bool CQPasteWnd::DoActionCloseWindow()
 	{
 		Log(_T("close 1"));
 
-		if (m_lstHeader.IsToolTipShowPersistant() == false &&
-			m_lstHeader.IsToolTipWindowVisible())
-		{
-			m_lstHeader.HidePopup(true);
-			Log(_T("close 2"));
-			ret = true;
-		}
-		else if (m_strSQLSearch.IsEmpty() == FALSE)
+		if (m_strSQLSearch.IsEmpty() == FALSE)
 		{
 			OnCancelFilter(0, 0);
 			Log(_T("close 3"));
@@ -3686,22 +3470,15 @@ bool CQPasteWnd::DoActionBackGroup()
 
 bool CQPasteWnd::DoActionToggleShowPersistant()
 {
-	if (m_lstHeader.IsToolTipWindowVisible())
+	theApp.ShowPersistent(!CGetSetOptions::m_bShowPersistent);
+	if (CGetSetOptions::m_bShowPersistent)
 	{
-		m_lstHeader.ToggleToolTipShowPersistant();
+		::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_SHOWWINDOW);
 	}
-	else
-	{
-		theApp.ShowPersistent(!CGetSetOptions::m_bShowPersistent);
-		if (CGetSetOptions::m_bShowPersistent)
-		{
-			::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_SHOWWINDOW);
-		}
 
-		MoveControls();
+	MoveControls();
 
-		UpdateStatus();
-	}
+	UpdateStatus();
 	return true;
 }
 
@@ -5540,9 +5317,6 @@ void CQPasteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 			UpdateStatus();
 		}
 		break;
-		case TOGGLES_ALLWAYS_SHOW_DESCRIPTION:
-			DoAction(ActionEnums::SHOWDESCRIPTION);
-			break;
 		case ROLLES_UP_WINDOW:
 			MinMaxWindow();
 			break;
@@ -5554,7 +5328,6 @@ void CQPasteWnd::OnNcLButtonDblClk(UINT nHitTest, CPoint point)
 
 void CQPasteWnd::OnShowGroupsTop()
 {
-	m_lstHeader.HidePopup(true);
 
 	OnShowGroupsBottom();
 	return;
@@ -5578,7 +5351,6 @@ void CQPasteWnd::OnShowGroupsTop()
 
 void CQPasteWnd::OnShowGroupsBottom()
 {
-	m_lstHeader.HidePopup(true);
 
 	if (m_GroupTree.IsWindowVisible())
 	{
@@ -5745,29 +5517,6 @@ LRESULT CQPasteWnd::OnUpDown(WPARAM wParam, LPARAM lParam)
 	return TRUE;
 }
 
-LRESULT CQPasteWnd::OnToolTipWndInactive(WPARAM wParam, LPARAM lParam)
-{
-	if (!CGetSetOptions::m_bShowPersistent)
-	{
-		CWnd* p = GetFocus();
-		if (p == NULL)
-		{
-			HideQPasteWindow(false);
-			m_lstHeader.HidePopup(true);
-		}
-	}
-	else
-	{
-		CWnd* p = GetFocus();
-		if (p == NULL)
-		{
-			m_lstHeader.HidePopup(true);
-		}
-	}
-
-	return TRUE;
-}
-
 void CQPasteWnd::OnUpdateMenuNewgroup(CCmdUI* pCmdUI)
 {
 	if (!pCmdUI->m_pMenu)
@@ -5909,7 +5658,6 @@ LRESULT CQPasteWnd::OnRefeshRow(WPARAM wParam, LPARAM lParam)
 	if (listPos >= topIndex && listPos <= lastIndex)
 	{
 		m_lstHeader.RefreshRow(listPos);
-		m_lstHeader.PostEventLoadedCheckDescription(listPos);
 	}
 
 	if (clipId == -2)
@@ -6675,7 +6423,6 @@ void CQPasteWnd::OnUpdateSpecialpasteSentence(CCmdUI* pCmdUI)
 
 void CQPasteWnd::OnSystemButton()
 {
-	m_lstHeader.HidePopup(true);
 
 	POINT pp;
 	CMenu cmPopUp;
@@ -6956,7 +6703,6 @@ void CQPasteWnd::OnUpdateMenuNewclip32937(CCmdUI* pCmdUI)
 
 LRESULT CQPasteWnd::OnSearchFocused(WPARAM wParam, LPARAM lParam)
 {
-	m_lstHeader.HidePopup(true);
 
 	return TRUE;
 }

@@ -20,15 +20,6 @@ CString ActionEnums::EnumDescription(ActionEnumValues value)
 
 	switch (value)
 	{
-	case SHOWDESCRIPTION:
-		val = "View Full Description";
-		break;
-	case NEXTDESCRIPTION:
-		val = "Next Full Description";
-		break;
-	case PREVDESCRIPTION:
-		val = "Previous Full Description";
-		break;
 	case SHOWMENU:
 		val = "Show Context Menu";
 		break;
@@ -206,9 +197,6 @@ CString ActionEnums::EnumDescription(ActionEnumValues value)
 	case MOVE_SELECTION_DOWN:
 		val = "Move Selection Down";
 		break;
-	case TOGGLE_DESCRIPTION_WORD_WRAP:
-		val = "Toggle Description Word Wrap";
-		break;
 	case APPLY_LAST_SEARCH:
 		val = "Apply Last Search";
 		break;
@@ -335,12 +323,6 @@ int ActionEnums::GetDefaultShortCutKeyA(ActionEnumValues value, int pos)
 	case 0:
 		switch (value)
 		{
-		case ActionEnums::SHOWDESCRIPTION:
-			return VK_F3;
-		case ActionEnums::NEXTDESCRIPTION:
-			return 'N';
-		case ActionEnums::PREVDESCRIPTION:
-			return 'P';		
 		case ActionEnums::NEWGROUP:
 			return ACCEL_MAKEKEY(VK_F7, HOTKEYF_CONTROL);
 		case ActionEnums::NEWGROUPSELECTION:
@@ -367,8 +349,6 @@ int ActionEnums::GetDefaultShortCutKeyA(ActionEnumValues value, int pos)
 			return VK_ESCAPE;
 		case FORCE_CLOSE_WINDOW:
 			return ACCEL_MAKEKEY(VK_ESCAPE, HOTKEYF_SHIFT);
-		case TOGGLE_DESCRIPTION_WORD_WRAP:
-			return 'W';
 		case COPY_SELECTION:
 			return ACCEL_MAKEKEY('C', HOTKEYF_CONTROL);
 		case REFRESH_LIST:
@@ -416,25 +396,12 @@ bool ActionEnums::UserConfigurable(ActionEnumValues value)
 	case ActionEnums::TOGGLEOUTPUTDEBUGSTRING:
 	case ActionEnums::HOMELIST:
 	case ActionEnums::PASTE_SCRIPT:
+	case ActionEnums::SHOWDESCRIPTION:
+	case ActionEnums::NEXTDESCRIPTION:
+	case ActionEnums::PREVDESCRIPTION:
+	case ActionEnums::TOGGLE_DESCRIPTION_WORD_WRAP:
 		return false;
 	}
 
 	return true;
-}
-
-bool ActionEnums::ToolTipAction(ActionEnumValues value)
-{
-	switch (value)
-	{
-	case ActionEnums::NEXTDESCRIPTION:
-	case ActionEnums::PREVDESCRIPTION:
-	case ActionEnums::TOGGLESHOWPERSISTANT:
-	case ActionEnums::TOGGLE_DESCRIPTION_WORD_WRAP:
-	case ActionEnums::CLOSEWINDOW:
-	case ActionEnums::SHOWDESCRIPTION:
-
-		return true;
-	}
-
-	return false;
 }

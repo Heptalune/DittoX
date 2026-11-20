@@ -11,6 +11,7 @@ public:
 	enum ActionEnumValues
 	{ 
 		FIRST_ACTION,
+		// Deprecated: the description window was removed, values are kept so existing shortcut configs stay valid
 		SHOWDESCRIPTION,
 		NEXTDESCRIPTION,
 		PREVDESCRIPTION,
@@ -105,6 +106,7 @@ public:
 		TOGGLE_CLIPBOARD_CONNECTION,
 		MOVE_SELECTION_UP,
 		MOVE_SELECTION_DOWN,
+		// Deprecated: the description window was removed, values are kept so existing shortcut configs stay valid
 		TOGGLE_DESCRIPTION_WORD_WRAP,
 		APPLY_LAST_SEARCH,
 		TOGGLE_SEARCH_METHOD,
@@ -165,6 +167,5 @@ public:
 	static int GetDefaultShortCutKeyA(ActionEnumValues value, int pos);
 	static int GetDefaultShortCutKeyB(ActionEnumValues value, int pos);
 	static bool UserConfigurable(ActionEnumValues value);
-	static bool ToolTipAction(ActionEnumValues value);
 };
 

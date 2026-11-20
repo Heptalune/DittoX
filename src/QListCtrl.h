@@ -7,13 +7,13 @@
 // QListCtrl.h : header file
 //
 #include "..\Shared\ArrayEx.h"
-#include "ToolTipEx.h"
 #include "FormattedTextDraw.h"
 #include "sqlite/CppSQLite3.h"
 #include "ClipFormatQListCtrl.h"
 #include "Accels.h"
 #include "GdiImageDrawer.h"
 #include "DPI.h"
+#include "RichEditCtrlEx.h"
 
 #define NM_SEARCH_ENTER_PRESSED		WM_USER+0x100
 #define NM_RIGHT					WM_USER+0x101
@@ -119,28 +119,13 @@ public:
 
 	void DestroyAndCreateAccelerator(BOOL bCreate, CppSQLite3DB &db);
 
-	bool PostEventLoadedCheckDescription(int updatedRow);
-	bool ShowFullDescription(bool bFromAuto = false, bool fromNextPrev = false);
 	BOOL SetItemCountEx(int iCount, DWORD dwFlags = 0);
 
-	void HidePopup(bool checkShowPersistant);
-	void ToggleToolTipShowPersistant();
-	bool ToggleToolTipWordWrap();
-	void SetTooltipActions(CAccels *pToolTipActions) { m_pToolTipActions = pToolTipActions; }
-	bool IsToolTipShowPersistant();
-	void DoToolTipSearch();
-	void HideToolTip();
-
 	void SetLogFont(LOGFONT &font);
-
-	HWND GetToolTipHWnd();
 
 	BOOL HandleKeyDown(WPARAM wParam, LPARAM lParam);
 
 	BOOL OnItemDeleted(long lID);
-
-	BOOL IsToolTipWindowVisible();
-	BOOL IsToolTipWindowFocus();
 
 	int GetRowHeight() { return m_rowHeight; }
 
@@ -166,8 +151,6 @@ protected:
 	TCHAR *m_pchTip;
 	CAccels	m_Accels;
 	CMapIDtoCF m_RTFData;
-	CToolTipEx *m_pToolTip;
-	HWND m_toolTipHwnd;
 	CFont m_Font;
 	CFont m_boldFont;
 	IFormattedTextDraw *m_pFormatter;
@@ -183,7 +166,6 @@ protected:
 	int m_rowHeight;
 	CString m_searchText;
 	BOOL m_showIfClipWasPasted;
-	CAccels *m_pToolTipActions;
 	CRichEditCtrlEx m_rtfFormater;
 	CDPI *m_windowDpi;
 

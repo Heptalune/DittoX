@@ -214,6 +214,9 @@ BOOL OpenDatabase(CString dbPath)
 		theApp.m_db.close();
 		theApp.m_db.open(dbPath);
 
+		// Keep SQLite's page cache small; the default 2MB is more than a clipboard DB needs.
+		theApp.m_db.execDML(_T("PRAGMA cache_size=-512;"));
+
 		theApp.m_db.setBusyTimeout(CGetSetOptions::GetDbTimeout());
 		theApp.m_db.SetRegexCaseInsensitive(CGetSetOptions::GetRegexCaseInsensitive());
 
