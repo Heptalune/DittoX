@@ -139,7 +139,7 @@ public:
 
 protected:
 	BOOL GetClipData(int nItem, CClipFormat &Clip);
-	BOOL DrawBitMap(int nItem, CRect &crRect, CDC *pDC, const CString &csDescription);
+	BOOL DrawBitMap(int nItem, CRect &crRect, CDC *pDC, const CString &csDescription, bool &bHideText);
 	bool MouseInScrollBarArea(CRect crWindow, CPoint point);
 	BOOL DrawRtfText(int nItem, CRect &crRect, CDC *pDC);
 	void StopHideScrollBarTimer();

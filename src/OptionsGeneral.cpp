@@ -48,6 +48,9 @@ void COptionsGeneral::DoDataExchange(CDataExchange* pDX)
 	//{{AFX_DATA_MAP(COptionsGeneral)
 	//DDX_Control(pDX, IDC_ENSURE, m_EnsureConnected);
 	//	DDX_Control(pDX, IDC_EDIT_SAVE_DELAY, m_SaveDelay);
+	DDX_Control(pDX, IDC_CHECK_ECO_MODE, m_btEcoMode);
+	DDX_Control(pDX, IDC_COMBO_THUMB_STYLE, m_cbThumbStyle);
+	DDX_Control(pDX, IDC_COMBO_THUMB_SIZE, m_cbThumbSize);
 	DDX_Control(pDX, IDC_COMBO_LANGUAGE, m_cbLanguage);
 	DDX_Control(pDX, IDC_PATH, m_ePath);
 	DDX_Control(pDX, IDC_EXPIRE_AFTER, m_eExpireAfter);
@@ -109,6 +112,26 @@ BOOL COptionsGeneral::OnInitDialog()
 		m_btRunOnStartup.SetCheck(CGetSetOptions::GetRunOnStartUp());
 	}
 #endif
+
+	m_btEcoMode.SetCheck(CGetSetOptions::GetEcoMode());
+
+	// Thumbnail style dropdown - entries are positional, matching m_nThumbStyle.
+	int nStyle = m_cbThumbStyle.AddString(theApp.m_Language.GetString("ThumbStyleSmall", "文字 + 小图"));
+	m_cbThumbStyle.SetItemData(nStyle, 0);
+	nStyle = m_cbThumbStyle.AddString(theApp.m_Language.GetString("ThumbStyleLarge", "只显示大缩略图"));
+	m_cbThumbStyle.SetItemData(nStyle, 1);
+	m_cbThumbStyle.SetCurSel(CGetSetOptions::GetThumbStyle());
+
+	static const int sizes[] = { 24, 32, 48, 64, 96 };
+	for (int i = 0; i < sizeof(sizes) / sizeof(sizes[0]); i++)
+	{
+		CString csSize;
+		csSize.Format(_T("%d px"), sizes[i]);
+		int nSize = m_cbThumbSize.AddString(csSize);
+		m_cbThumbSize.SetItemData(nSize, sizes[i]);
+		if (sizes[i] == CGetSetOptions::GetThumbSize())
+			m_cbThumbSize.SetCurSel(nSize);
+	}
 
 	m_btMaximumCheck.SetCheck(CGetSetOptions::GetCheckForMaxEntries());
 	if (CGetSetOptions::GetCheckForMaxEntries() == FALSE)
@@ -227,6 +250,13 @@ BOOL COptionsGeneral::OnApply()
 		CGetSetOptions::SetRunOnStartUp(m_btRunOnStartup.GetCheck());
 	}
 #endif
+
+	CGetSetOptions::SetEcoMode(m_btEcoMode.GetCheck());
+
+	if (m_cbThumbStyle.GetCurSel() >= 0)
+		CGetSetOptions::SetThumbStyle((long)m_cbThumbStyle.GetItemData(m_cbThumbStyle.GetCurSel()));
+	if (m_cbThumbSize.GetCurSel() >= 0)
+		CGetSetOptions::SetThumbSize((long)m_cbThumbSize.GetItemData(m_cbThumbSize.GetCurSel()));
 
 	CGetSetOptions::SetCheckForMaxEntries(m_btMaximumCheck.GetCheck());
 	CGetSetOptions::SetCheckForExpiredEntries(m_btExpire.GetCheck());
@@ -474,11 +504,30 @@ HBRUSH COptionsGeneral::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 void COptionsGeneral::FillThemes()
 {
+	CString csTheme = CGetSetOptions::GetTheme();
+
 	m_cbTheme.Clear();
 
 	int windowsSettingIndex = m_cbTheme.AddString(theApp.m_Language.GetString("FollowWindowsTheme", "（跟随 Windows 亮/暗主题）"));
 	m_cbTheme.SetItemData(windowsSettingIndex, 0);
 	m_cbTheme.SetCurSel(windowsSettingIndex);
+
+	CString csFile = CGetSetOptions::GetPath(PATH_THEMES) + _T("*.xml");
+	CFileFind find;
+	BOOL bCont = find.FindFile(csFile);
+	while (bCont)
+	{
+		bCont = find.FindNextFile();
+		CTheme theme;
+		if (theme.Load(find.GetFileTitle(), true, false) &&
+			theme.FileVersion() >= 2 && theme.FileVersion() < 100)
+		{
+			int nIndex = m_cbTheme.AddString(find.GetFileTitle());
+			m_cbTheme.SetItemData(nIndex, 1);
+			if (find.GetFileTitle() == csTheme)
+				m_cbTheme.SetCurSel(nIndex);
+		}
+	}
 }
 
 void COptionsGeneral::OnBnClickedButtonTheme()

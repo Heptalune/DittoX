@@ -377,7 +377,6 @@ protected:
     afx_msg void OnMenuQuickpropertiesRemovehotkey();
     afx_msg void OnMenuGroupsMovetogroup();
     afx_msg void OnMenuPasteplaintextonly();
-    afx_msg void OnMenuHelp();
     afx_msg void OnMenuQuickoptionsFont();
     afx_msg void OnMenuQuickoptionsShowthumbnails();
     afx_msg void OnMenuQuickoptionsDrawrtftext();

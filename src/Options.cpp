@@ -41,6 +41,8 @@ BOOL CGetSetOptions::m_bLogSendReceiveErrors;
 BOOL CGetSetOptions::m_HideDittoXOnHotKeyIfAlreadyShown;
 long CGetSetOptions::m_lPort;
 BOOL CGetSetOptions::m_bDrawThumbnail;
+long CGetSetOptions::m_nThumbStyle;
+long CGetSetOptions::m_nThumbSize;
 BOOL CGetSetOptions::m_bDrawCopiedColorCode;
 BOOL CGetSetOptions::m_centerWindowBelowCursorOrCaret;
 BOOL CGetSetOptions::m_bFastThumbnailMode;
@@ -262,6 +264,8 @@ void CGetSetOptions::LoadSettings()
 	m_HideDittoXOnHotKeyIfAlreadyShown = GetHideDittoXOnHotKeyIfAlreadyShown();
 	m_lPort = GetPort();
 	m_bDrawThumbnail = GetDrawThumbnail();
+	m_nThumbStyle = GetThumbStyle();
+	m_nThumbSize = GetThumbSize();
 	m_bDrawCopiedColorCode = GetDrawCopiedColorCode();
 	m_centerWindowBelowCursorOrCaret = GetCenterWindowBelowCursorOrCaret();
 	m_bFastThumbnailMode = GetFastThumbnailMode();
@@ -1319,6 +1323,22 @@ BOOL CGetSetOptions::GetWinVTakeover()
 	return GetProfileLong("WinVTakeoverEnabled", FALSE);
 }
 
+void CGetSetOptions::SetEcoMode(BOOL bOption)
+{
+	SetProfileLong("EcoModeEnabled", bOption);
+	ApplyEcoMode();
+}
+BOOL CGetSetOptions::GetEcoMode()
+{
+	return GetProfileLong("EcoModeEnabled", FALSE);
+}
+void CGetSetOptions::ApplyEcoMode()
+{
+	// BELOW_NORMAL_PRIORITY_CLASS keeps UI responsive while giving CPU to foreground apps.
+	::SetPriorityClass(::GetCurrentProcess(),
+		GetEcoMode() ? BELOW_NORMAL_PRIORITY_CLASS : NORMAL_PRIORITY_CLASS);
+}
+
 CString	CGetSetOptions::GetListToPutOnClipboard()
 { 
 	CString cs = GetProfileString("ListToPutOnClipboard", "");
@@ -1452,6 +1472,25 @@ BOOL CGetSetOptions::GetDrawThumbnail()
 	BOOL bDrawThumbnails = TRUE;
 
 	return GetProfileLong("DrawThumbnail", bDrawThumbnails);
+}
+
+void CGetSetOptions::SetThumbStyle(long nStyle)
+{
+	SetProfileLong("ThumbStyle", nStyle);
+	m_nThumbStyle = nStyle;
+}
+long CGetSetOptions::GetThumbStyle()
+{
+	return GetProfileLong("ThumbStyle", 0);
+}
+void CGetSetOptions::SetThumbSize(long nSize)
+{
+	SetProfileLong("ThumbSize", nSize);
+	m_nThumbSize = nSize;
+}
+long CGetSetOptions::GetThumbSize()
+{
+	return GetProfileLong("ThumbSize", 48);
 }
 
 void CGetSetOptions::SetFastThumbnailMode(BOOL thumbnailDrawMode)
@@ -1877,12 +1916,12 @@ void CGetSetOptions::SetAutoMaxDelay(long lDelay)
 
 void CGetSetOptions::SetTheme(CString csTheme)
 {
-	SetProfileString(_T("Theme2"), _T(""));
+	SetProfileString(_T("Theme2"), csTheme);
 }
 
 CString CGetSetOptions::GetTheme()
 {
-	return _T("");
+	return GetProfileString(_T("Theme2"), _T(""));
 }
 
 long CGetSetOptions::GetKeyStateWaitTimerCount()

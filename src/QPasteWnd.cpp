@@ -136,7 +136,6 @@ BEGIN_MESSAGE_MAP(CQPasteWnd, CWndEx)
 	ON_COMMAND(ID_MENU_QUICKPROPERTIES_REMOVEHOTKEY, OnMenuQuickpropertiesRemovehotkey)
 	ON_COMMAND(ID_MENU_GROUPS_MOVETOGROUP, OnMenuGroupsMovetogroup)
 	ON_COMMAND(ID_MENU_PASTEPLAINTEXTONLY, OnMenuPasteplaintextonly)
-	ON_COMMAND(ID_MENU_HELP, OnMenuHelp)
 	ON_COMMAND(ID_MENU_QUICKOPTIONS_FONT, OnMenuQuickoptionsFont)
 	ON_COMMAND(ID_MENU_QUICKOPTIONS_SHOWTHUMBNAILS, OnMenuQuickoptionsShowthumbnails)
 	ON_COMMAND(ID_MENU_QUICKOPTIONS_DRAWRTFTEXT, OnMenuQuickoptionsDrawrtftext)
@@ -400,6 +399,7 @@ int CQPasteWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 	m_lstHeader.SetDpiInfo(&m_DittoXWindow.m_dpi);
 	m_lstHeader.ShowWindow(SW_SHOW);
+
 
 	// Create modern scrollbar overlay (vertical)
 	m_modernScrollBar.Create(this, &m_lstHeader, ScrollBarOrientation::Vertical);
@@ -666,7 +666,6 @@ void CQPasteWnd::MoveControls()
 		m_lstHeader.ShowWindow(SW_HIDE);
 		m_noSearchResultsStatic.ShowWindow(SW_SHOW);
 		m_modernScrollBar.ShowWindow(SW_HIDE);
-		m_modernScrollBarHorz.ShowWindow(SW_HIDE);
 
 		auto border = m_DittoXWindow.m_dpi.Scale(10);
 		m_noSearchResultsStatic.MoveWindow(border, topOfListBox + border, cx - border, cy - listBoxBottomOffset - topOfListBox + 1 - border);
@@ -677,7 +676,8 @@ void CQPasteWnd::MoveControls()
 		m_noSearchResultsStatic.ShowWindow(SW_HIDE);
 
 		m_lstHeader.MoveWindow(0, topOfListBox, cx + extraSize, cy - listBoxBottomOffset - topOfListBox + extraSize + 1);
-		
+		m_lstHeader.SetColumnWidth(0, cx + extraSize);
+
 		// Update modern scrollbar position and visibility (only if enabled)
 		if (CGetSetOptions::m_useModernScrollBar)
 		{
@@ -685,21 +685,16 @@ void CQPasteWnd::MoveControls()
 			{
 				m_modernScrollBar.UpdateScrollBar();
 				m_modernScrollBar.Show(false);
-				m_modernScrollBarHorz.UpdateScrollBar();
-				m_modernScrollBarHorz.Show(false);
 			}
 			else
 			{
 				m_modernScrollBar.UpdateScrollBar();
 				m_modernScrollBar.Hide(false);
-				m_modernScrollBarHorz.UpdateScrollBar();
-				m_modernScrollBarHorz.Hide(false);
 			}
 		}
 		else
 		{
 			m_modernScrollBar.Hide(false);
-			m_modernScrollBarHorz.Hide(false);
 		}
 	}
 	m_search.MoveWindow(m_DittoXWindow.m_dpi.Scale(34), cy - m_DittoXWindow.m_dpi.Scale(searchRowStart - 5), cx - m_DittoXWindow.m_dpi.Scale(70), m_DittoXWindow.m_dpi.Scale(25));
@@ -718,6 +713,15 @@ void CQPasteWnd::MoveControls()
 	{
 		m_alwaysOnToWarningStatic.ShowWindow(SW_HIDE);
 	}
+
+	// Rounded window corners (fixed 8px, DPI-scaled). Use full window rect,
+	// not the client rect, or the right/bottom edge gets clipped.
+	CRect wndRect;
+	GetWindowRect(&wndRect);
+	CRgn rgn;
+	int radius = m_DittoXWindow.m_dpi.Scale(8);
+	rgn.CreateRoundRectRgn(0, 0, wndRect.Width(), wndRect.Height(), radius, radius);
+	SetWindowRgn(rgn, TRUE);
 }
 
 void CQPasteWnd::OnSetFocus(CWnd* pOldWnd)
@@ -2051,7 +2055,7 @@ void CQPasteWnd::UpdateFont()
 {
 	LOGFONT lf;
 	CGetSetOptions::GetFont(lf);
-	lf.lfHeight = m_DittoXWindow.m_dpi.Scale(lf.lfHeight);
+	lf.lfHeight = m_DittoXWindow.m_dpi.Scale(lf.lfHeight - 2); // slightly larger list text
 	m_lstHeader.SetLogFont(lf);
 
 	m_SearchFont.DeleteObject();
@@ -2406,11 +2410,6 @@ void CQPasteWnd::OnMenuImport()
 	m_bHideWnd = false;
 	theApp.ImportClips(m_hWnd);
 	m_bHideWnd = true;
-}
-
-void CQPasteWnd::OnMenuHelp()
-{
-	CHyperLink::GotoURL(_T("https://github.com/sabrogden/DittoX/wiki"), SW_SHOW);
 }
 
 void CQPasteWnd::OnMenuQuickoptionsFont()
@@ -5660,6 +5659,8 @@ LRESULT CQPasteWnd::OnRefeshRow(WPARAM wParam, LPARAM lParam)
 		m_lstHeader.RefreshRow(listPos);
 	}
 
+	// Newly loaded DIBs need to appear in the thumbnail grid too.
+
 	if (clipId == -2)
 	{
 		m_lstHeader.Invalidate();
@@ -5868,12 +5869,10 @@ LRESULT CQPasteWnd::OnUpdateScrollBar(WPARAM wParam, LPARAM lParam)
 		if (wParam == TRUE)
 		{
 			m_modernScrollBar.Show(false);
-			m_modernScrollBarHorz.Show(false);
 		}
 		else
 		{
 			m_modernScrollBar.UpdateScrollBar();
-			m_modernScrollBarHorz.UpdateScrollBar();
 		}
 	}
 	return 0;
@@ -7778,3 +7777,4 @@ void CQPasteWnd::OnUpdateSpecialpastePasteAsImage(CCmdUI* pCmdUI)
 
 	UpdateMenuShortCut(pCmdUI, ActionEnums::PASTE_AS_IMAGE);
 }
+

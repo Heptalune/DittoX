@@ -16,6 +16,7 @@
 #include <cwchar>   // For swscanf
 #include <algorithm> // For std::round
 #include <gdiplus.h>
+#include <shobjidl.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -23,7 +24,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define ROW_BOTTOM_BORDER		8
+#define ROW_BOTTOM_BORDER		11
 #define ROW_LEFT_BORDER			8
 #define COLOR_SHADOW			RGB(245, 245, 245)
 #define DUMMY_COL_WIDTH			2
@@ -379,6 +380,12 @@ void CQListCtrl::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	if (m_windowDpi != NULL)
 	{
 		lpMeasureItemStruct->itemHeight = ((tm.tmHeight + tm.tmExternalLeading) * m_linesPerRow) + m_windowDpi->Scale(ROW_BOTTOM_BORDER);
+		if (CGetSetOptions::m_bDrawThumbnail && CGetSetOptions::m_nThumbStyle == 1)
+		{
+			int nThumbRow = m_windowDpi->Scale(CGetSetOptions::m_nThumbSize) + m_windowDpi->Scale(ROW_BOTTOM_BORDER);
+			if (lpMeasureItemStruct->itemHeight < nThumbRow)
+				lpMeasureItemStruct->itemHeight = nThumbRow;
+		}
 		m_rowHeight = lpMeasureItemStruct->itemHeight;
 	}
 	SelectObject(hDC, hFontOld);
@@ -506,7 +513,8 @@ void CQListCtrl::OnCustomdrawList(NMHDR* pNMHDR, LRESULT* pResult)
 
 		DrawCopiedColorCode(csText, rcText, pDC);
 
-		DrawBitMap(nItem, rcText, pDC, csText);
+		bool bHideText = false;
+		DrawBitMap(nItem, rcText, pDC, csText, bHideText);
 
 		// draw the symbol box
 		if (strSymbols.GetLength() > 0)
@@ -542,18 +550,18 @@ void CQListCtrl::OnCustomdrawList(NMHDR* pNMHDR, LRESULT* pResult)
 			}
 		}
 
-		if (DrawRtfText(nItem, rcText, pDC) == FALSE)
+		if (bHideText == false && DrawRtfText(nItem, rcText, pDC) == FALSE)
 		{
 			auto highlightColor = CGetSetOptions::m_Theme.SearchTextHighlight();
 			//use unprintable characters so it doesn't find copied html to convert
 			if (m_searchText.GetLength() > 0 &&
 				FindNoCaseAndInsert(csText, m_searchText, StrF(_T("\x01\x04 color='#%02x%02x%02x'\x02"), GetRValue(highlightColor), GetGValue(highlightColor), GetBValue(highlightColor)), _T("\x01\x03\x04\x02"), m_linesPerRow) > 0)
 			{
-				DrawHTML(pDC->m_hDC, csText, csText.GetLength(), rcText, DT_VCENTER | DT_EXPANDTABS | DT_NOPREFIX);
+				DrawHTML(pDC->m_hDC, csText, csText.GetLength(), rcText, DT_VCENTER | DT_EXPANDTABS | DT_NOPREFIX | DT_WORDBREAK);
 			}
 			else
 			{
-				pDC->DrawText(csText, rcText, DT_VCENTER | DT_EXPANDTABS | DT_NOPREFIX);
+				pDC->DrawText(csText, rcText, DT_VCENTER | DT_EXPANDTABS | DT_NOPREFIX | DT_WORDBREAK);
 			}
 		}
 
@@ -1081,32 +1089,94 @@ BOOL CQListCtrl::DrawRtfText(int nItem, CRect& crRect, CDC* pDC)
 // DrawBitMap loads a DIB from the DB, draws a crRect thumbnail of the image
 //  to pDC and caches that thumbnail as a DIB in m_ThumbNails[ ItemID ].
 // ALL items are cached in m_ThumbNails (those without images are cached with NULL m_hgData)
-BOOL CQListCtrl::DrawBitMap(int nItem, CRect& crRect, CDC* pDC, const CString& csDescription)
+BOOL CQListCtrl::DrawBitMap(int nItem, CRect& crRect, CDC* pDC, const CString& csDescription, bool& bHideText)
 {
 	if (CGetSetOptions::m_bDrawThumbnail == FALSE)
 		return FALSE;
 
+	bHideText = false;
+	BOOL bDrawn = FALSE;
+	BOOL bLarge = (CGetSetOptions::m_nThumbStyle == 1);
+	int iconSize = m_windowDpi->Scale(CGetSetOptions::m_nThumbSize);
+
 	CClipFormatQListCtrl* format = GetItem_CF_DIB_ClipFormat(nItem);
 	if (format != NULL)
 	{
-		HGLOBAL smallImage = format->GetDibFittingToHeight(pDC, crRect.Height());
+		HGLOBAL smallImage = format->GetDibFittingToHeight(pDC, bLarge ? iconSize : crRect.Height());
 		if (smallImage != NULL)
 		{
-			//Will return the width of the bitmap in nWidth
 			int nWidth = 0;
 			if (CBitmapHelper::DrawDIB(pDC, smallImage, crRect.left, crRect.top, nWidth))
 			{
-				// adjust the rect so other information can be drawn next to the thumbnail
 				crRect.left += nWidth + 3;
+				bDrawn = TRUE;
+				if (bLarge) bHideText = true;
 			}
 		}
 	}
-	else if (csDescription.Find(_T("CF_DIB")) == 0)
+
+	if (!bDrawn && csDescription.Find(_T("CF_DIB")) == 0)
 	{
-		crRect.left += crRect.Height();
+		crRect.left += bLarge ? iconSize : crRect.Height();
 	}
 
-	return TRUE;
+	if (!bDrawn && (csDescription.Find(_T("Copied File")) == 0 ||
+		csDescription.Find(_T("Copied Files")) == 0 ||
+		csDescription.Find(_T("已复制文件")) == 0 ))
+	{
+		// Copied file: draw a real thumbnail of the file contents.
+		int iFirst = csDescription.Find(_T(" - "));
+		int iPath = (iFirst >= 0) ? csDescription.Find(_T(" - "), iFirst + 3) : -1;
+		if (iPath >= 0)
+		{
+			CString csPath = csDescription.Mid(iPath + 3);
+			csPath = csPath.SpanExcluding(_T("\r\n"));
+
+			int drawSize = bLarge ? iconSize : m_windowDpi->Scale(16);
+			HBITMAP hThumb = NULL;
+			CComPtr<IShellItem> shellItem;
+			if (SUCCEEDED(::SHCreateItemFromParsingName(csPath, NULL, IID_PPV_ARGS(&shellItem))))
+			{
+				CComPtr<IShellItemImageFactory> factory;
+				if (SUCCEEDED(shellItem->QueryInterface(IID_PPV_ARGS(&factory))))
+				{
+					SIZE size = { drawSize, drawSize };
+					factory->GetImage(size, SIIGBF_THUMBNAILONLY | SIIGBF_RESIZETOFIT, &hThumb);
+				}
+			}
+
+			if (hThumb != NULL)
+			{
+				CDC memDC;
+				memDC.CreateCompatibleDC(pDC);
+				CBitmap bmp;
+				bmp.Attach(hThumb);
+				CBitmap* pOld = memDC.SelectObject(&bmp);
+				pDC->BitBlt(crRect.left, crRect.top, drawSize, drawSize, &memDC, 0, 0, SRCCOPY);
+				memDC.SelectObject(pOld);
+				crRect.left += drawSize + 3;
+				bDrawn = TRUE;
+				if (bLarge) bHideText = true;
+			}
+			else
+			{
+				SHFILEINFO sfi = { 0 };
+				if (::SHGetFileInfo(csPath, 0, &sfi, sizeof(sfi),
+					SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES) != 0 &&
+					sfi.hIcon != NULL)
+				{
+					::DrawIconEx(pDC->GetSafeHdc(), crRect.left, crRect.top, sfi.hIcon,
+						drawSize, drawSize, 0, NULL, DI_NORMAL);
+					::DestroyIcon(sfi.hIcon);
+					crRect.left += drawSize + 3;
+					bDrawn = TRUE;
+					if (bLarge) bHideText = true;
+				}
+			}
+		}
+	}
+
+	return bDrawn;
 }
 
 void CQListCtrl::RefreshVisibleRows()

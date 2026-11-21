@@ -180,7 +180,7 @@ int CDittoXWindow::IndexToPos(int index, bool horizontal)
 	case 0:
 		if (horizontal)
 		{
-			return m_dpi.Scale(24);
+			return m_dpi.Scale(28);
 		}
 		else
 		{
@@ -190,7 +190,7 @@ int CDittoXWindow::IndexToPos(int index, bool horizontal)
 	case 1:
 		if (horizontal)
 		{
-			return m_dpi.Scale(48);
+			return m_dpi.Scale(56);
 		}
 		else
 		{
@@ -201,7 +201,7 @@ int CDittoXWindow::IndexToPos(int index, bool horizontal)
 
 		if (horizontal)
 		{
-			return m_dpi.Scale(72);
+			return m_dpi.Scale(84);
 		}
 		else
 		{
@@ -211,7 +211,7 @@ int CDittoXWindow::IndexToPos(int index, bool horizontal)
 	case 3:
 		if (horizontal)
 		{
-			return m_dpi.Scale(96);
+			return m_dpi.Scale(112);
 		}
 		else
 		{
@@ -221,7 +221,7 @@ int CDittoXWindow::IndexToPos(int index, bool horizontal)
 	case 4:
 		if (horizontal)
 		{
-			return m_dpi.Scale(104);
+			return m_dpi.Scale(120);
 		}
 		else
 		{

@@ -214,6 +214,7 @@ BOOL CCP_MainApp::InitInstance()
 	ParseCommandLine(cmdInfo);
 
 	CGetSetOptions::LoadSettings();
+	CGetSetOptions::ApplyEcoMode();
 
 	theApp.m_activeWnd.TrackActiveWnd(false);
 

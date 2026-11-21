@@ -10,7 +10,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // CAbout dialog
 
-#include "hyperlink.h"
 #include "HListBox.h"
 
 class CAbout : public CPropertyPage
@@ -25,8 +24,6 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CAbout)
 	enum { IDD = IDD_ABOUT };
-	CHyperLink	m_Link;
-	CHyperLink	m_UpstreamLink;
 	CHListBox	m_List;
 	//}}AFX_DATA
 

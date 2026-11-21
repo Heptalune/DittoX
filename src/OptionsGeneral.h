@@ -42,6 +42,9 @@ public:
 	CButton	m_btExpire;
 	CButton m_btShowIconInSysTray;
 	CButton	m_btRunOnStartup;
+	CButton	m_btEcoMode;
+	CComboBox m_cbThumbStyle;
+	CComboBox m_cbThumbSize;
 	CButton m_btSaveMultiPaste;
 	CString	m_csPlaySound;
 	CEdit m_ClipSeparator;

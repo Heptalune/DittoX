@@ -453,6 +453,11 @@
 #define IDC_STATIC_CUSTOM_KEYS          2091
 #define IDC_CHECK_WIN_V_TAKEOVER        2176
 #define IDC_STATIC_WINV_HINT            2177
+#define IDC_CHECK_ECO_MODE              2213
+#define IDC_STATIC_ECO_HINT             2214
+#define IDC_COMBO_THUMB_STYLE           2215
+#define IDC_COMBO_THUMB_SIZE            2216
+#define IDC_STATIC_THUMB_STYLE          2217
 #define IDC_STATIC_UPLINK               2178
 #define IDC_TYPES_TEXT                  2179
 #define IDC_TYPES_IMAGES                2180

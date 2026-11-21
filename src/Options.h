@@ -196,6 +196,10 @@ public:
 	static void		SetWinVTakeover(BOOL bOption);
 	static BOOL		GetWinVTakeover();
 
+	static void		SetEcoMode(BOOL bOption);
+	static BOOL		GetEcoMode();
+	static void		ApplyEcoMode();
+
 	static CString m_csIPListToPutOnClipboard;
 	static CString	GetListToPutOnClipboard();
 	static BOOL		SetListToPutOnClipboard(CString cs);
@@ -221,6 +225,14 @@ public:
 	static BOOL		m_bDrawThumbnail;
 	static void		SetDrawThumbnail(long bDraw);
 	static BOOL		GetDrawThumbnail();
+
+	// 0 = text + small thumbnail, 1 = large thumbnail only (text entries keep text)
+	static long		m_nThumbStyle;
+	static void		SetThumbStyle(long nStyle);
+	static long		GetThumbStyle();
+	static long		m_nThumbSize;
+	static void		SetThumbSize(long nSize);
+	static long		GetThumbSize();
 
 	static BOOL		m_bFastThumbnailMode;
 	static void		SetFastThumbnailMode(BOOL bval);
